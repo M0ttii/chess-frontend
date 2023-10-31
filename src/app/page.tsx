@@ -1,7 +1,5 @@
 'use client'
 import Board from '@/components/Board'
-import Image from 'next/image'
-import { Chessboard } from 'react-chessboard'
 
 export default function Home() {
   return (
