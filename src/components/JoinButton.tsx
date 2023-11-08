@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Input } from "./ui/input";
@@ -11,20 +11,37 @@ import { useToast } from "./ui/use-toast";
 
 export function JoinButton() {
     const [isLoading, setIsLoading] = React.useState<boolean>(false)
+    const [game, setGame] = useState('');
     const form = useForm()
     const { toast } = useToast()
 
+    const handleGameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setGame(event.target.value); // Aktualisieren des Zustands mit dem neuen Wert
+    };
+
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault()
-        setIsLoading(true)
-
-        setTimeout(() => {
-            setIsLoading(false)
+        if(game.length == 0){
             toast({
                 variant: "destructive",
-                description: "This game could not be found"
+                description: "Lobby cannot be empty!"
             })
-        }, 3000)
+            return;
+        }
+
+        setIsLoading(true);
+        const res = await fetch("http://localhost:8080/lobby/" + game)
+
+        if(!res.ok){
+            toast({
+                variant: "destructive",
+                description: "This lobby could not be found"
+            })
+            setIsLoading(false);
+            return;
+        }
+        
+        
     }
 
     return (
@@ -42,6 +59,8 @@ export function JoinButton() {
                     <Input
                         id="link"
                         placeholder="000000"
+                        value={game}
+                        onChange={handleGameChange}
                     />
                 </div>
                 <form onSubmit={onSubmit}>
