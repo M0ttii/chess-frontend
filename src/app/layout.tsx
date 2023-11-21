@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Toaster } from '@/components/ui/toaster'
+import { StompClientProvider } from '@/ws/StompClientContext'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,8 +20,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
           <div className="">
-            {children}
-            <Toaster></Toaster>
+            <StompClientProvider>
+
+              {children}
+              <Toaster></Toaster>
+            </StompClientProvider>
           </div>
         </body>
     </html>
