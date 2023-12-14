@@ -8,12 +8,14 @@ import { useForm } from "react-hook-form";
 import { CopyIcon, SymbolIcon } from "@radix-ui/react-icons";
 import { useToast } from "./ui/use-toast";
 import { useStomp } from "@/ws/StompClientContext";
+import { useRouter } from "next/navigation";
 
 
 export function CreateButton() {
 	const { stompClient } = useStomp();
 	const [isLoading, setIsLoading] = React.useState<boolean>(false)
 	const [game, setGame] = useState('');
+	const router = useRouter()
 	const [open, setOpen] = useState(false);
 	const form = useForm()
 	const { toast } = useToast()
@@ -35,17 +37,18 @@ export function CreateButton() {
 	}
 
 	async function createLobby(state: boolean) {
+		console.log(state)
 		if (state) {
 			if (game != '') {
 				try {
 					var gameToDelete = game;
-					setGame('');
 					const response = await fetch("http://localhost:8080/lobby/" + gameToDelete, {
 						method: 'DELETE',
 						headers: {
 							'Content-Type': 'application/json',
 						}
 					})
+					setGame('');
 				} catch (error) {
 					console.log(error);
 				}
@@ -59,13 +62,21 @@ export function CreateButton() {
 			});
 			const data = await response.json();
 			setGame(data.id);
-
+			console.log("Lobby ID " + data.id);
+			console.log("Game: " + game)
 			if (stompClient) {
-				console.log("Stomp: " + stompClient.connected)
-				stompClient.activate();
-				console.log("Stomp: " + stompClient.connected)
+				if(!stompClient.active){
+					stompClient.activate();
+				}
+				if(stompClient.connected){
+					stompClient.subscribe('/topic/lobby/' + data.id, message => {
+						console.log("Second player joined")
+						router.push('/game/' + data.id)
+					})
+				}
+				//stompClient.publish({destination: '/app/test', body: JSON.stringify({'id': '123'})})
 				//if(stompClient.connected)
-				stompClient.publish({destination: '/test', body: 'Message'});
+				//stompClient.publish({destination: '/test', body: 'Message'});
 			}
 		}
 

@@ -6,6 +6,7 @@ export default function Home() {
     <div className="flex w-full items-center justify-center">
       <div className="h-full w-full">
         <Board></Board>
+        
       </div>
     </div>
   )
