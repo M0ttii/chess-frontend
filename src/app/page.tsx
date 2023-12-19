@@ -1,8 +1,9 @@
 'use client'
 import Board from '@/components/Board'
 import { CreateButton } from '@/components/CreateButton'
+import { DebugButton } from '@/components/DebugButton'
 import { JoinButton } from '@/components/JoinButton'
-import  UserDialog  from '@/components/UserDialog'
+import UserDialog from '@/components/UserDialog'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
@@ -17,15 +18,18 @@ export default function Home() {
 	const [open, setOpen] = React.useState<boolean>(false);
 	const { toast } = useToast();
 
+	var loaded = false;
+
 	useEffect(() => {
 		async function checkUser() {
 			const userID = localStorage.getItem("id");
+			var sentError = false;
 
-			if(userID){
-				try{
+			if (userID) {
+				try {
 
 					const res = await fetch('http://localhost:8080/user/' + userID)
-					if(res.ok){
+					if (res.ok) {
 						const data = await res.json();
 						console.log("User exists: " + data);
 						setIsConnected(true);
@@ -35,21 +39,19 @@ export default function Home() {
 						setOpen(true);
 						setIsConnected(true);
 					}
-				} catch (error){
-					
-					toast({
-						variant: "destructive",
-						description: "Can't connect to server"
-					})
-				
+				} catch (error) {
+						toast({
+							variant: "destructive",
+							description: "Can't connect to server"
+						})
 				}
 			} else {
 				setOpen(true);
 			}
 		}
-		
+
 		checkUser();
-	})
+	}, [toast])
 
 	function create() {
 		setIsLoading(true);
@@ -69,14 +71,15 @@ export default function Home() {
 				<div className="text-white text-center absolute top-40 left-1/2 transform -translate-x-1/2">
 					<Label className="text-4xl font-semibold">IU</Label>
 				</div>
-				<div className="flex flex-col mx-auto w-40 h-20 items-center justify-between md:flex">
+				<div className="flex flex-col mx-auto w-40 h-40 items-center justify-between md:flex">
 					{/* <Button onClick={create} variant="default" disabled={!isConnected} className='mx-auto dark font-semibold'>
 						{isLoading && (
 							<SymbolIcon className="mr-2 h-4 w-4 animate-spin" />
 						)}
 						Create Game</Button> */}
 
-					<CreateButton/>
+					<DebugButton></DebugButton>
+					<CreateButton />
 					<JoinButton />
 				</div>
 			</div>

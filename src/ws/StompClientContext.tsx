@@ -24,7 +24,7 @@ export function StompClientProvider({ children }: ScriptProps) {
     useEffect(() => {
         //const sockJS = new SockJS("http://localhost:8080/test");
         const client = new Client({
-            brokerURL: 'ws://localhost:8080/test',
+            brokerURL: 'ws://localhost:8080/debug',
             debug: function (str) {
                 console.log(str)
             },
