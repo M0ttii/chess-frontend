@@ -8,12 +8,15 @@ import { toast } from "./ui/use-toast";
 import { randomInt, randomUUID } from "crypto";
 import { v4 as uuidv4 } from 'uuid';
 import { Input } from "./ui/input";
+import MoveDetails from "./MoveDetails";
+import { MoveInfo } from "@/model/MoveInfo";
 
 export default function Board() {
     const { stompClient } = useStomp();
     const [isConnected, setIsConnected] = useState(false);
     const [isGame, setIsGame] = useState(false);
     const eventHandlers: any = useRef({});
+    const [moveInfo, setMoveInfo] = useState({} as MoveInfo);
     const [fen, setFen] = useState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
     useEffect(() => {
@@ -158,6 +161,7 @@ export default function Board() {
             move: move
         }
         sendAndReceive(message).then((res: any) => {
+            setMoveInfo(res.moveInfo);
             if (res.moveInfo.legal) {
                 console.log("Legal: " + res.moveInfo.legal)
                 setFen(res.moveInfo.stateFEN)
@@ -177,6 +181,7 @@ export default function Board() {
                     <Button type="submit">Load</Button>
                 </div>
                 <div className="flex flex-col space-y-2">
+                    <MoveDetails info={moveInfo} />
 
                     <Button onClick={startGame}>Start Game</Button>
                     <Button onClick={startGame}>Reset Position</Button>
