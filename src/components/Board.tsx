@@ -8,12 +8,15 @@ import { toast } from "./ui/use-toast";
 import { randomInt, randomUUID } from "crypto";
 import { v4 as uuidv4 } from 'uuid';
 import { Input } from "./ui/input";
+import MoveDetails from "./MoveDetails";
+import { MoveInfo } from "@/model/MoveInfo";
 
 export default function Board() {
     const { stompClient } = useStomp();
     const [isConnected, setIsConnected] = useState(false);
     const [isGame, setIsGame] = useState(false);
     const eventHandlers: any = useRef({});
+    const [moveInfo, setMoveInfo] = useState({} as MoveInfo);
     const [inputFen, setInputFen] = useState("");
     const [gameFen, setGameFen] = useState("");
     const [oldFen, setOldFen] = useState("");
@@ -248,6 +251,7 @@ export default function Board() {
         setGameFen(tempFen)
 
         sendAndReceive(message).then((res: any) => {
+            setMoveInfo(res.moveInfo);
             if (res.moveInfo.legal) {
                 console.log("Legal: " + res.moveInfo.legal)
                 setGameFen(res.moveInfo.stateFEN)
@@ -274,6 +278,7 @@ export default function Board() {
                     <Button type="submit" onClick={loadFen}>Load</Button>
                 </div>
                 <div className="flex flex-col space-y-2">
+                    <MoveDetails info={moveInfo} />
 
                     <Button onClick={startGame}>Start Game</Button>
                     <Button onClick={startGame}>Reset Position</Button>
