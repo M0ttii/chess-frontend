@@ -243,7 +243,8 @@ export default function Board() {
         var move = sourceSquare + "-" + targetSquare;
         var message: DebugMoveModel = {
             id: getRandomInt(10000),
-            move: move
+            move: move,
+            promoteTo: -1
         }
         const tempFen = executeMoveOnFen(gameFen, move)
         moveHistory.push({fen: gameFen, move: move})
