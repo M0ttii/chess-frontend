@@ -272,7 +272,7 @@ export default function Board() {
 
 
     return (
-        <div className="flex items-center justify-center h-screen bg-[#161618]">
+        <div className="flex flex-wrap items-center justify-center space-y-2 h-screen bg-[#161618]">
             <div className="flex-1 flex flex-col space-y-20 items-center justify-center">
                 <div className="flex w-full max-w-sm items-center">
                     {/*  space-x-2 */}
@@ -287,8 +287,8 @@ export default function Board() {
                     <Button onClick={startGame}>Reset Position</Button>
                 </div>
             </div>
-            <div className="flex-1 flex items-center justify-center">
-                <Chessboard boardWidth={800} onPieceDrop={onDrop} position={gameFen}></Chessboard>
+            <div className="flex items-center justify-center bg-green-200">
+                <Chessboard boardWidth={600} onPieceDrop={onDrop} position={gameFen}></Chessboard>
             </div>
         </div>
 
