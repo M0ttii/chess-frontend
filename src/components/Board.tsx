@@ -3,7 +3,7 @@ import { Chessboard } from "react-chessboard";
 import { Button } from "./ui/button";
 import { AbstractMessageModel, Action, DebugModel, FenMessageModel } from "@/model/Debug";
 import { DebugMoveModel } from "@/model/DebugMessage";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "./ui/use-toast";
 import { randomInt, randomUUID } from "crypto";
 import { v4 as uuidv4 } from 'uuid';
@@ -273,14 +273,16 @@ export default function Board() {
 
     return (
         <div className="flex items-center justify-center h-screen bg-[#161618]">
-            <div className="flex-1 flex flex-col space-y-80 items-center justify-center">
-                <div className="flex w-full max-w-sm items-center space-x-2">
+            <div className="flex-1 flex flex-col space-y-20 items-center justify-center">
+                <div className="flex w-full max-w-sm items-center">
+                    {/*  space-x-2 */}
                     <Input className="dark" type="email" onChange={handleFenChange} placeholder="FEN"/>
                     <Button type="submit" onClick={loadFen}>Load</Button>
                 </div>
-                <div className="flex flex-col space-y-2">
+                <div className="w-10/12">
                     <MoveDetails info={moveInfo} />
-
+                </div>
+                <div className="flex flex-col space-y-2">
                     <Button onClick={startGame}>Start Game</Button>
                     <Button onClick={startGame}>Reset Position</Button>
                 </div>
