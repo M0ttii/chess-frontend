@@ -10,6 +10,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { Input } from "./ui/input";
 import MoveDetails from "./MoveDetails";
 import { MoveInfo } from "@/model/MoveInfo";
+import ScenarioLoader from "./ScenarioLoader";
+import Feed from "./Feed";
 
 export default function Board() {
     const { stompClient } = useStomp();
@@ -270,17 +272,20 @@ export default function Board() {
         return false;
     }
 
+    const onSelection = (fen: string) => {
+        if (fen.length != 0) {
+            setGameFen(fen);
+        }
+    }
+
 
     return (
         <div className="flex flex-wrap items-center justify-center space-y-2 h-screen bg-[#161618]">
             <div className="flex-1 flex flex-col space-y-20 items-center justify-center">
-                <div className="flex w-full max-w-sm items-center">
-                    {/*  space-x-2 */}
-                    <Input className="dark" type="email" onChange={handleFenChange} placeholder="FEN"/>
-                    <Button type="submit" onClick={loadFen}>Load</Button>
-                </div>
+                <ScenarioLoader onSelection={onSelection}/>
                 <div className="w-10/12">
                     <MoveDetails info={moveInfo} />
+                    <Feed />
                 </div>
                 <div className="flex flex-col space-y-2">
                     <Button onClick={startGame}>Start Game</Button>
