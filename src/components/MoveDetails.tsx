@@ -32,7 +32,7 @@ const MoveDetails = (props: MoveDetailsProps) => {
 			<div className="text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 ml-2 bg-gray-200 text-black rounded-full">{props.info?.move.moveType}</div>
 			<p>{!props.info?.legal && <span className="font-bold">Error: </span>}{props.info?.failMessage}</p>
 			<p>{props.info?.move.from.index} -&gt; {props.info?.move.to.index}[{props.info?.move.to.color}]</p>
-			<p>Logs </p>
+			<p>Logs</p>
 			<ol className="relative border-s border-gray-700 ml-2">
 				{renderLogs()} 
 			</ol>
@@ -40,7 +40,7 @@ const MoveDetails = (props: MoveDetailsProps) => {
 	}
 
 	return (
-		<div className="flex-row space-y-2">
+		<div className="flex-row space-y-2 w-full">
 			<h1 className="text-xl">Move</h1>
 				{props.info.move ? 
 					renderMove() 

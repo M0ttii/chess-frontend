@@ -281,19 +281,22 @@ export default function Board() {
 
     return (
         <div className="flex flex-wrap items-center justify-center space-y-2 h-screen bg-[#161618]">
-            <div className="flex-1 flex flex-col space-y-20 items-center justify-center">
+            {/* <div className="flex-1 flex flex-col space-y-20 items-center justify-center"> */}
+            <div className="flex flex-1 h-full items-center justify-center flex-col flex-wrap">
                 <ScenarioLoader onSelection={onSelection}/>
-                <div className="w-10/12">
-                    <MoveDetails info={moveInfo} />
+                <div className="w-96 mt-8">
                     <Feed />
                 </div>
-                <div className="flex flex-col space-y-2">
+                <div className="w-96 mt-8">
+                    <MoveDetails info={moveInfo} />
+                </div>
+                <div className="grid grid-cols-2 gap-2 w-96 mt-8">
                     <Button onClick={startGame}>Start Game</Button>
                     <Button onClick={startGame}>Reset Position</Button>
                 </div>
             </div>
-            <div className="flex items-center justify-center bg-green-200">
-                <Chessboard boardWidth={600} onPieceDrop={onDrop} position={gameFen}></Chessboard>
+            <div className="flex items-center justify-center">
+                <Chessboard boardWidth={700} onPieceDrop={onDrop} position={gameFen}></Chessboard>
             </div>
         </div>
 

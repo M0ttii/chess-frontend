@@ -34,7 +34,7 @@ const ScenarioLoader = (props: ScenarioLoaderProps) => {
 	}
 
 	return (
-		<div className="grid grid-cols-2 gap-2 m-6">
+		<div className="grid grid-cols-2 gap-2 w-96">
 			<Input className="dark col-span-2" type="email" onChange={onChange} placeholder="FEN string" value={input} />
 			<Select onValueChange={onScenarioSelection} >
 				<SelectTrigger className="w-[180px]">
