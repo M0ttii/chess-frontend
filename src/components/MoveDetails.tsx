@@ -1,18 +1,11 @@
 'user client'
 import { MoveInfo } from "@/model/MoveInfo";
-import { Label } from "./ui/label";
 
 interface MoveDetailsProps {
 	info: MoveInfo;
 }
 
 const MoveDetails = (props: MoveDetailsProps) => {
-	/*
-	const renderLogs = () => {
-		return props.info.log?.map((entry, i) => <li key={i} className="te ml-2">{entry}</li>);
-	}
-	*/
-
 	const renderLogs = () => {
 		return props.info.log?.map((entry, i) => {
 			return <li key={i} className="mb-2 ms-4">   
@@ -24,9 +17,8 @@ const MoveDetails = (props: MoveDetailsProps) => {
 		});
 	}
 
-	return (
-		<div className="flex-row space-y-2">
-			<h1 className="text-xl">Move</h1>
+	const renderMove = () => {
+		return <>
 			{
 				props.info.legal ?
 				<div 
@@ -37,18 +29,25 @@ const MoveDetails = (props: MoveDetailsProps) => {
 					className="text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-red-200 text-red-700 rounded-full"
 				>illegal</div>
 			}
-			<div className="text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 ml-1 bg-blue-200 text-blue-700 rounded-full">{props.info.move.moveType}</div>
-			{/* <p className="font-bold">gameState: {props.info.gameState}</p> */}
-			{/* add move and positions */}
-			<p>{props.info.move.from.index} -&gt; {props.info.move.to.index} </p>
-			<p>{!props.info.legal && <div className="font-bold">Error:</div>}{props.info.failMessage}</p>
+			<div className="text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 ml-1 bg-blue-200 text-blue-700 rounded-full">{props.info?.move.moveType}</div>
+			<p>{props.info?.move.from.index} -&gt; {props.info?.move.to.index}[{props.info?.move.to.color}] </p>
+			<p>{!props.info?.legal && <div className="font-bold">Error:</div>}{props.info?.failMessage}</p>
 			<p>Logs </p>
 			<ol className="relative border-s border-gray-700 ml-2">
 				{renderLogs()} 
 			</ol>
+		</>
+	}
 
-			            
-				
+	return (
+		<div className="flex-row space-y-2">
+			<h1 className="text-xl">Move</h1>
+				{props.info.move ? 
+					renderMove() 
+					: 
+					<p className="italic text-sm">No moves yet</p>
+				}
+			
 		</div>
 	)
 }
