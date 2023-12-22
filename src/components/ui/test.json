@@ -1,0 +1,16 @@
+{
+    "id": 3321,
+    "moveInfo": {
+        "legal": false,
+        "playerColor": 0,
+        "gameState": "UNKOWN",
+        "move": null,
+        "failMessage": null,
+        "log": [
+            "colors :: player: 0 | enemy 1",
+            "POSITION from: T0 @11",
+            "POSITION to: T0 @19",
+            "++ move is legal and synced ++"
+        ]
+    }
+}

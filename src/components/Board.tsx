@@ -3,24 +3,32 @@ import { Chessboard } from "react-chessboard";
 import { Button } from "./ui/button";
 import { AbstractMessageModel, Action, DebugModel, FenMessageModel } from "@/model/Debug";
 import { DebugMoveModel } from "@/model/DebugMessage";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "./ui/use-toast";
 import { randomInt, randomUUID } from "crypto";
 import { v4 as uuidv4 } from 'uuid';
 import { Input } from "./ui/input";
 import MoveDetails from "./MoveDetails";
 import { MoveInfo } from "@/model/MoveInfo";
+import { useRegisterCallback } from "@/ws/Handler";
 
 export default function Board() {
     const { stompClient } = useStomp();
     const [isConnected, setIsConnected] = useState(false);
     const [isGame, setIsGame] = useState(false);
-    const eventHandlers: any = useRef({});
+    const eventHandlers: any = useRef({}).current;
     const [moveInfo, setMoveInfo] = useState({} as MoveInfo);
     const [inputFen, setInputFen] = useState("");
     const [gameFen, setGameFen] = useState("");
     const [oldFen, setOldFen] = useState("");
     const moveHistory: { fen: string; move: string; }[] = [];
+
+
+    const stableCallback = useCallback(() => {
+        console.log("test");
+    }, [])
+
+    // const subscription = useRegisterCallback('/topic/debug/move/', eventHandlers, stableCallback);
 
     useEffect(() => {
         // Überprüfen Sie, ob stompClient existiert, bevor Sie darauf zugreifen
@@ -121,32 +129,7 @@ export default function Board() {
         }
     }
 
-    function sendAndReceive(message: DebugMoveModel) {
-        return new Promise((resolve, reject) => {
-            const messageId = message.id
-
-            // Registrieren eines Event-Handlers für die Antwort
-            console.log("Handler register")
-            eventHandlers[messageId] = (response: any) => {
-                delete eventHandlers[messageId]; // Handler entfernen, nachdem er verwendet wurde
-                resolve(response); // Die Promise mit der Antwort auflösen
-            };
-
-            console.log("IDMESSAGE " + message.id)
-
-            // Senden der Nachricht
-            if (stompClient) {
-                stompClient.publish({ destination: '/debug/move', body: JSON.stringify(message) });
-            }
-
-            setTimeout(() => {
-                if (eventHandlers[messageId]) {
-                    delete eventHandlers[messageId];
-                    reject(new Error("Timeout waiting for response"));
-                }
-            }, 30000); // 30 Sekunden Timeout
-        });
-    }
+    
 
     function sendAndReceiveGeneric(destination: string, message: AbstractMessageModel) {
         return new Promise((resolve, reject) => {
@@ -251,7 +234,7 @@ export default function Board() {
 
         setGameFen(tempFen)
 
-        sendAndReceive(message).then((res: any) => {
+        sendAndReceiveGeneric("/debug/move", message).then((res: any) => {
             setMoveInfo(res.moveInfo);
             if (res.moveInfo.legal) {
                 console.log("Legal: " + res.moveInfo.legal)

@@ -1,8 +1,16 @@
 import { UUID } from "crypto";
+import { AbstractMessageModel } from "./Debug";
 
-export type DebugMoveModel = {
-    id: number
-    move: string
-    promoteTo: number
-};
+
+
+export class DebugMoveModel extends AbstractMessageModel {
+    move: string;
+    promoteTo: number;
+
+    constructor(id: number, move: string, promoteTo: number){
+        super(id)
+        this.move = move;
+        this.promoteTo = promoteTo;
+    }
+}
 
