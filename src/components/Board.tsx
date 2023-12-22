@@ -10,6 +10,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { Input } from "./ui/input";
 import MoveDetails from "./MoveDetails";
 import { MoveInfo } from "@/model/MoveInfo";
+import ScenarioLoader from "./ScenarioLoader";
+import Feed from "./Feed";
 import { useRegisterCallback } from "@/ws/Handler";
 
 export default function Board() {
@@ -253,25 +255,31 @@ export default function Board() {
         return false;
     }
 
+    const onSelection = (fen: string) => {
+        if (fen.length != 0) {
+            setGameFen(fen);
+        }
+    }
+
 
     return (
         <div className="flex flex-wrap items-center justify-center space-y-2 h-screen bg-[#161618]">
-            <div className="flex-1 flex flex-col space-y-20 items-center justify-center">
-                <div className="flex w-full max-w-sm items-center">
-                    {/*  space-x-2 */}
-                    <Input className="dark" type="email" onChange={handleFenChange} placeholder="FEN"/>
-                    <Button type="submit" onClick={loadFen}>Load</Button>
+            {/* <div className="flex-1 flex flex-col space-y-20 items-center justify-center"> */}
+            <div className="flex flex-1 h-full items-center justify-center flex-col flex-wrap">
+                <ScenarioLoader onSelection={onSelection}/>
+                <div className="w-96 mt-8">
+                    <Feed />
                 </div>
-                <div className="w-10/12">
+                <div className="w-96 mt-8">
                     <MoveDetails info={moveInfo} />
                 </div>
-                <div className="flex flex-col space-y-2">
+                <div className="grid grid-cols-2 gap-2 w-96 mt-8">
                     <Button onClick={startGame}>Start Game</Button>
                     <Button onClick={startGame}>Reset Position</Button>
                 </div>
             </div>
-            <div className="flex items-center justify-center bg-green-200">
-                <Chessboard boardWidth={600} onPieceDrop={onDrop} position={gameFen}></Chessboard>
+            <div className="flex items-center justify-center">
+                <Chessboard boardWidth={700} onPieceDrop={onDrop} position={gameFen}></Chessboard>
             </div>
         </div>
 
