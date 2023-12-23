@@ -12,6 +12,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import * as React from 'react';
+import { useGame } from "@/app/gameCtx";
 
 interface ScenarioLoaderProps {
 	onSelection: (fen: string) => void
@@ -19,6 +20,9 @@ interface ScenarioLoaderProps {
 
 const ScenarioLoader = (props: ScenarioLoaderProps) => {
 	const [input, setInput] = useState("");
+
+    const {load} = useGame();
+
 
 	const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		// TODO add delay

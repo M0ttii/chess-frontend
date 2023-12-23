@@ -22,6 +22,7 @@ export function JoinButton() {
     };
 
     async function onSubmit(event: React.SyntheticEvent) {
+        console.log("Join BUtton onSubmit event:", event);
         event.preventDefault()
         if (game.length == 0) {
             toast({

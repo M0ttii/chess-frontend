@@ -2,6 +2,8 @@
 
 import Board from "@/components/Board";
 import { Button } from "@/components/ui/button";
+import Game from "@/components/Game";
+import { GameProvider } from "../gameCtx";
 
 export default function Home() {
 
@@ -27,9 +29,9 @@ export default function Home() {
 
     return (
       <div className="flex w-full h-screen items-center justify-center">
-        <div className="h-screen w-full bg-red-300">
-          <Board />
-        </div>
+        <GameProvider>
+          <Game />
+        </GameProvider>
       </div>
     )
   }

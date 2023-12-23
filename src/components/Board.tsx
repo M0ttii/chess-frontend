@@ -1,18 +1,14 @@
 import { useStomp } from "@/ws/StompClientContext";
 import { Chessboard } from "react-chessboard";
-import { Button } from "./ui/button";
-import { AbstractMessageModel, Action, DebugModel, FenMessageModel } from "@/model/Debug";
+import { AbstractMessageModel, FenMessageModel } from "@/model/Debug";
 import { DebugMoveModel } from "@/model/DebugMessage";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "./ui/use-toast";
-import { randomInt, randomUUID } from "crypto";
-import { v4 as uuidv4 } from 'uuid';
-import { Input } from "./ui/input";
 import MoveDetails from "./MoveDetails";
 import { MoveInfo } from "@/model/MoveInfo";
 import ScenarioLoader from "./ScenarioLoader";
 import Feed from "./Feed";
-import { useRegisterCallback } from "@/ws/Handler";
+import GameService from "@/app/game";
 
 export default function Board() {
     const { stompClient } = useStomp();
@@ -24,11 +20,13 @@ export default function Board() {
     const [gameFen, setGameFen] = useState("");
     const [oldFen, setOldFen] = useState("");
     const moveHistory: { fen: string; move: string; }[] = [];
+    const [gameService, setGameService] = useState(new GameService(1)); // 0: Normal, 1: Freemode/Debug
 
+    // const { startGame1 } = React.useContext(GameContext);
 
-    const stableCallback = useCallback(() => {
-        console.log("test");
-    }, [])
+    // const stableCallback = useCallback(() => {
+    //     console.log("test");
+    // }, [])
 
     // const subscription = useRegisterCallback('/topic/debug/move/', eventHandlers, stableCallback);
 
@@ -53,6 +51,7 @@ export default function Board() {
             if (stompClient) {
                 stompClient.onConnect = onConnect;
                 stompClient.onDisconnect = onDisconnect;
+                gameService.setStompClient(stompClient);
             }
 
             return () => {
@@ -71,22 +70,22 @@ export default function Board() {
             startGame();
             const subscription = stompClient.subscribe('/topic/debug/move/', message => {
                 var content = JSON.parse(message.body);
-                console.log("Received message:", content);
+                console.log("[SUB::Move] Received message:", content);
                 if (eventHandlers[content.id]) {
-                    console.log("Found handler for message ID:", content.id);
+                    console.log("[SUB::Move] Found handler for message ID:", content.id);
                     eventHandlers[content.id](content);
                 } else {
-                    console.log("No handler found for message ID:", content.id);
+                    console.log("[SUB::Move] No handler found for message ID:", content.id);
                 }
             });
             const subscription1 = stompClient.subscribe('/topic/debug/fen/', message => {
                 var content = JSON.parse(message.body);
-                console.log("Received message:", content);
+                console.log("[SUB:Fen] Received message:", content);
                 if (eventHandlers[content.id]) {
-                    console.log("Found handler for message ID:", content.id);
+                    console.log("[SUB:Fen] Found handler for message ID:", content.id);
                     eventHandlers[content.id](content);
                 } else {
-                    console.log("No handler found for message ID:", content.id);
+                    console.log("[SUB:Fen] No handler found for message ID:", content.id);
                 }
             });
 
@@ -94,12 +93,12 @@ export default function Board() {
                 var content = message.body;
                 if (content == 'done') {
                     setIsGame(true);
-                    setGameFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-                    setOldFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-                    console.log("Nice");
+                    // setGameFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+                    // setOldFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+                    setOldFen(gameFen);
+                    console.log("[SUB:Game] 'done'");
                 } else if (content == 'error') {
                     toast({
-
                         description: 'Game could not be created.'
                     })
                 }
@@ -121,14 +120,7 @@ export default function Board() {
 
 
     function startGame() {
-        if (stompClient) {
-
-            var message: DebugModel = {
-                fen: ''
-            }
-
-            stompClient.publish({ destination: '/debug/newgame', body: JSON.stringify(message) })
-        }
+        // gameService.startGame(gameFen);
     }
 
     
@@ -168,37 +160,9 @@ export default function Board() {
 
     function executeMoveOnFen(fen: string, move: string) {
         console.log("OldFen: " + oldFen);
-        // Zerlegen des FEN-Strings in seine Hauptkomponenten
-        let [position, turn, castling, enPassant, halfMove, fullMove] = fen.split(" ");
-    
-        // Umwandlung der Brett-Position in ein zweidimensionales Array
-        const rows = position.split("/").map(row => row.replace(/[1-8]/g, (match) => '1'.repeat(parseInt(match))));
-    
-        // Umwandlung der Schachzug-Notation (z.B. e2-e4) in Array-Indizes
-        const [from, to] = move.split("-").map(notation => {
-            const file = notation.charCodeAt(0) - 'a'.charCodeAt(0);
-            const rank = 8 - parseInt(notation[1]);
-            return [rank, file];
-        });
-    
-        // Ausführen des Zuges: Figur verschieben und Zielposition leeren
-        const piece = rows[from[0]][from[1]];
-        rows[from[0]] = replaceAt(rows[from[0]], from[1], '1');
-        rows[to[0]] = replaceAt(rows[to[0]], to[1], piece);
-    
-        // Konvertierung des Arrays zurück in den FEN-String
-        const newPosition = rows.map(row => row.replace(/1+/g, match => match.length.toString())).join("/");
-    
-        return `${newPosition} ${turn} ${castling} ${enPassant} ${halfMove} ${fullMove}`;
+        return gameService.executeMoveOnFen(fen, move);
     }
     
-    function replaceAt(str: string, index: number, replacement: string) {
-        return str.substr(0, index) + replacement + str.substr(index + 1);
-    }
-    
-    // Beispielverwendu
-    
-
     function loadFen(){
         console.log("InputFen: "  + inputFen)
         if (stompClient) {
@@ -215,9 +179,9 @@ export default function Board() {
         }
     }
 
-    const handleFenChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setInputFen(event.target.value); // Aktualisieren des Zustands mit dem neuen Wert
-    };
+    // const handleFenChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     setInputFen(event.target.value); // Aktualisieren des Zustands mit dem neuen Wert
+    // };
 
     function onDrop(sourceSquare: any, targetSquare: any) {
         if (!isGame) {
@@ -239,7 +203,8 @@ export default function Board() {
         sendAndReceiveGeneric("/debug/move", message).then((res: any) => {
             setMoveInfo(res.moveInfo);
             if (res.moveInfo.legal) {
-                console.log("Legal: " + res.moveInfo.legal)
+                console.log("[RCV::move] " + res.moveInfo.legal)
+                console.log("updated move resp: any changes? ", res.moveInfo.stateFEN != gameFen)
                 setGameFen(res.moveInfo.stateFEN)
                 return true;
             } else {
@@ -255,9 +220,12 @@ export default function Board() {
         return false;
     }
 
-    const onSelection = (fen: string) => {
+    async function onSelection(fen: string) {
         if (fen.length != 0) {
             setGameFen(fen);
+            // startGame();
+            console.log("on selection: ", fen);
+            gameService.startGame(fen);
         }
     }
 
@@ -267,6 +235,7 @@ export default function Board() {
             {/* <div className="flex-1 flex flex-col space-y-20 items-center justify-center"> */}
             <div className="flex flex-1 h-full items-center justify-center flex-col flex-wrap">
                 <ScenarioLoader onSelection={onSelection}/>
+               
                 <div className="w-96 mt-8">
                     <Feed />
                 </div>
@@ -274,14 +243,13 @@ export default function Board() {
                     <MoveDetails info={moveInfo} />
                 </div>
                 <div className="grid grid-cols-2 gap-2 w-96 mt-8">
-                    <Button onClick={startGame}>Start Game</Button>
-                    <Button onClick={startGame}>Reset Position</Button>
+                    {/* <Button onClick={startGame}>Start Game</Button>
+                    <Button onClick={startGame}>Reset Position</Button> */}
                 </div>
             </div>
             <div className="flex items-center justify-center">
                 <Chessboard boardWidth={700} onPieceDrop={onDrop} position={gameFen}></Chessboard>
             </div>
         </div>
-
     )
 }
