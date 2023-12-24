@@ -2,12 +2,12 @@
 import { MoveInfo } from "@/model/MoveInfo";
 
 interface MoveDetailsProps {
-	info: MoveInfo;
+	info: MoveInfo | null;
 }
 
 const MoveDetails = (props: MoveDetailsProps) => {
 	const renderLogs = () => {
-		return props.info.log?.map((entry, i) => {
+		return props.info?.log?.map((entry, i) => {
 			return <li key={i} className="mb-2 ms-4">   
 				<div className="items-center justify-between p-2 border border-gray-200 rounded-lg shadow-sm sm:flex dark border-gray-600">
 					<div className="text-sm font-normal text-gray-300">{entry}</div>
@@ -20,7 +20,7 @@ const MoveDetails = (props: MoveDetailsProps) => {
 	const renderMove = () => {
 		return <>
 			{
-				props.info.legal ?
+				props.info?.legal ?
 				<div 
 					className="text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-blue-300 text-blue-700 rounded-full"
 				>legal</div>
@@ -40,9 +40,9 @@ const MoveDetails = (props: MoveDetailsProps) => {
 	}
 
 	return (
-		<div className="flex-row space-y-2 w-full">
+		<div className="flex-row space-y-2 w-96">
 			<h1 className="text-xl">Move</h1>
-				{props.info.move ? 
+				{props.info?.move ? 
 					renderMove() 
 					: 
 					<p className="italic text-sm">No moves yet</p>

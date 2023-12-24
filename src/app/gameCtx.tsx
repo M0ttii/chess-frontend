@@ -19,6 +19,8 @@ import { MoveInfo } from "@/model/MoveInfo";
 interface GameContextProps {
 	fen: string;
 	setFen: React.Dispatch<React.SetStateAction<string>>;
+	moves: MoveInfo[];
+	getLastMove(): MoveInfo | null;
 	createGame(): void;
 	startGame(fen: string): void;
 	load(fen: string): void;
@@ -27,9 +29,12 @@ interface GameContextProps {
 
 export const GameContext = createContext<GameContextProps>({
 	fen: "",
-	setFen: () => { },
+	setFen: () => {},
+	moves: [],
+	// getLastMove: (): MoveInfo | null => {},
+	getLastMove: () => {return null},
 	createGame: () => {},
-	startGame: (fen: string) => { console.log("[ctx] start game", fen) },
+	startGame: (fen: string) => {},
 	load: (fen: string) => {},
 	execute: (move: string) => {}
 });
@@ -39,11 +44,11 @@ export function useGame() {
 }
 
 export function GameProvider({ children }: PropsWithChildren) { 
-	// const [stompClient, setStompClient] = useState<Client | null>(null);
 	const [val, setVal] = useState("");
 	const [stompConnected, setStompConnected] = useState(false);
 	const eventHandlers: any = useRef({}).current;
 	const [fen, setFen] = useState("");
+	const [moves, setMoves] = useState<MoveInfo[]>([]);
 
 	const { stompClient } = useStomp();
 
@@ -66,7 +71,6 @@ export function GameProvider({ children }: PropsWithChildren) {
             if (stompClient) {
                 stompClient.onConnect = onConnect;
                 stompClient.onDisconnect = onDisconnect;
-                // gameService.setStompClient(stompClient);
             }
 
             // return () => {
@@ -188,7 +192,7 @@ export function GameProvider({ children }: PropsWithChildren) {
 			console.log("resolve", info);
 			if (info.legal) {
 				setFen(newFen);
-
+				moves.push(info);
 			}
 		})
 		.catch(() => {
@@ -217,6 +221,14 @@ export function GameProvider({ children }: PropsWithChildren) {
 		});
 	}
 
+	const getLastMove=  (): MoveInfo | null => {
+		const last = moves.at(0);
+		if (last) {
+			return last;
+		}
+		return null;
+	}
+
 	const replaceAt = (str: string, index: number, replacement: string) => {
         return str.substr(0, index) + replacement + str.substr(index + 1);
     }
@@ -228,8 +240,10 @@ export function GameProvider({ children }: PropsWithChildren) {
 		<GameContext.Provider value={{
 			fen: fen,
 			setFen: setFen,
+			moves: moves,
 			// stompClient: stompClient, 
 			// setStompClient: setStompClient, 
+			getLastMove: getLastMove,
 			createGame: createGame,
 			startGame: startGame,
 			load: load,
