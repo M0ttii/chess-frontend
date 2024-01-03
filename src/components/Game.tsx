@@ -4,15 +4,23 @@ import { Chessboard } from "react-chessboard";
 import ScenarioLoader from "./ScenarioLoader";
 import MoveDetails from "./MoveDetails";
 import Feed from "./Feed";
+import { PromotionPieceOption } from "react-chessboard/dist/chessboard/types";
 
 const Game = () => {
 	const { fen, load, execute, getLastMove } = useGame();
 	
 	function onDrop(sourceSquare: any, targetSquare: any): boolean {
+		console.log("Piece dropped")
 		var move = sourceSquare + "-" + targetSquare;
         execute(move);
 		// add move history
 		return true;
+	}
+
+	function test(piece: PromotionPieceOption | undefined): boolean{
+		console.log(piece);
+		return true;
+
 	}
 
 
@@ -31,7 +39,7 @@ const Game = () => {
 
 			<div className="flex flex-wrap items-center justify-center space-y-2 h-screen bg-[#161618]">
 				<div className="flex items-center justify-center">
-					<Chessboard boardWidth={700} onPieceDrop={onDrop} position={fen} />
+					<Chessboard boardWidth={700} onPieceDrop={onDrop} position={fen}/>
 				</div>
 			</div>
 		</>

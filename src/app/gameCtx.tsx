@@ -15,7 +15,11 @@ import { DebugMoveModel } from "@/model/DebugMessage";
 import { DebugModel } from "@/model/Debug";
 import { MoveInfo } from "@/model/MoveInfo";
 
-// export const GameContet = React.createContext>
+/*
+ * GameContextProps
+ * 
+ * Definiert die Eigenschaften des GameContext.
+ */
 interface GameContextProps {
 	fen: string;
 	setFen: React.Dispatch<React.SetStateAction<string>>;
@@ -27,6 +31,12 @@ interface GameContextProps {
 	execute(move: string): void;
 }
 
+/*
+ * GameContext
+ * 
+ * Definiert den GameContext, der die FEN-Position und die Liste der Züge
+ * enthält.
+ */
 export const GameContext = createContext<GameContextProps>({
 	fen: "",
 	setFen: () => {},
@@ -43,15 +53,28 @@ export function useGame() {
 	return useContext(GameContext);
 }
 
+/*
+ * GameProvider
+ * 
+ * Stellt den GameContext für alle Komponenten bereit.
+ */
 export function GameProvider({ children }: PropsWithChildren) { 
 	const [val, setVal] = useState("");
 	const [stompConnected, setStompConnected] = useState(false);
 	const eventHandlers: any = useRef({}).current;
 	const [fen, setFen] = useState("");
 	const [moves, setMoves] = useState<MoveInfo[]>([]);
-
+	const [promoteTo, setPromoteTo] = useState(-1);
 	const { stompClient } = useStomp();
 
+	/*
+	 * useEffect
+	 * 
+	 * Wird aufgerufen, wenn sich die stompClient-Referenz ändert.
+	 * 
+	 * Wenn stompClient nicht null ist, wird der Client aktiviert und die
+	 * onConnect- und onDisconnect-Handler gesetzt.
+	 */
 	useEffect(() => {
 		if (stompClient) {
             if (!stompClient.active) {
@@ -82,6 +105,16 @@ export function GameProvider({ children }: PropsWithChildren) {
         
 		}
 	}, [stompClient]);
+
+
+	/*
+	 * useEffect
+	 * 
+	 * Wird aufgerufen, wenn sich die stompClient-Referenz ändert.
+	 * 
+	 * Wenn stompClient nicht null ist, wird der Client aktiviert und die
+	 * onConnect- und onDisconnect-Handler gesetzt.
+	 */
 
 	useEffect(() => {
         if (stompConnected && stompClient) {
@@ -136,6 +169,11 @@ export function GameProvider({ children }: PropsWithChildren) {
 		
 	}
 
+	/*
+	 * startGame
+	 * 
+	 * Sendet eine Nachricht an den Server, um ein neues Spiel zu starten.
+	 */
 	async function startGame(fen: string) {
 		console.log("provider: start game");
 		if (stompClient && stompConnected) {
@@ -146,6 +184,11 @@ export function GameProvider({ children }: PropsWithChildren) {
 		}
 	}
 
+	/*
+	 * load
+	 * 
+	 * Sendet eine Nachricht an den Server, um ein neues Spiel mit Start-FEN zu starten.
+	 */
 	const load = (fen: string) => {
 		console.log("game: loading with", fen);
 		if (stompClient && stompConnected) {
@@ -157,6 +200,12 @@ export function GameProvider({ children }: PropsWithChildren) {
 		setFen(fen);
 	}
 
+	/*
+	 * execute
+	 * 
+	 * Sendet eine Nachricht an den Server, um einen Zug auszuführen.
+	 */
+	
 	const execute = (move: string) => {
         // Zerlegen des FEN-Strings in seine Hauptkomponenten
         let [position, turn, castling, enPassant, halfMove, fullMove] = fen.split(" ");
@@ -170,22 +219,36 @@ export function GameProvider({ children }: PropsWithChildren) {
             const rank = 8 - parseInt(notation[1]);
             return [rank, file];
         });
-    
+
         // Ausführen des Zuges: Figur verschieben und Zielposition leeren
         const piece = rows[from[0]][from[1]];
         rows[from[0]] = replaceAt(rows[from[0]], from[1], '1');
         rows[to[0]] = replaceAt(rows[to[0]], to[1], piece);
     
-        // Konvertierung des Arrays zurück in den FEN-String
+        // Konvertierung des Arrays zurück in den FEN‚-String
         const newPosition = rows.map(row => row.replace(/1+/g, match => match.length.toString())).join("/");
     
         const newFen = `${newPosition} ${turn} ${castling} ${enPassant} ${halfMove} ${fullMove}`;
 
-		var message: DebugMoveModel = {
+		console.log("Piece on square " + getPiece(move.split("-")[0]) )
+		console.log("Target square" + to)
+
+		var message: DebugMoveModel;
+		message = {
             id:  Math.floor(Math.random() * 1000),
             move: move,
             promoteTo: -1
         }
+		if(to[0] == 0 || to[0] == 7){
+			if(getPiece(move.split("-")[0]) == "P" || getPiece(move.split("-")[0]) == "p"){
+				console.log("Promotion");
+				message = {
+					id:  Math.floor(Math.random() * 1000),
+					move: move,
+					promoteTo: 1
+				}
+			}
+		}
 
 		sendAwaitResponse("/debug/move", message)
 		.then((info: MoveInfo) => {
@@ -200,6 +263,13 @@ export function GameProvider({ children }: PropsWithChildren) {
 		})
 	}
 
+	/*
+	 * sendAwaitResponse
+	 * 
+	 * Sendet eine Nachricht an den Server und wartet auf eine Antwort.
+	 * 
+	 * Die Antwort wird als Promise zurückgegeben.
+	 */
 	function sendAwaitResponse(destination: string, message: AbstractMessageModel): Promise<MoveInfo> {
 		return new Promise(async (resolve, reject) => {
             const messageId = message.id
@@ -221,6 +291,29 @@ export function GameProvider({ children }: PropsWithChildren) {
 		});
 	}
 
+	/*
+	 * getPiece
+	 * 
+	 * Gibt die Figur auf einem Feld aus dem FEN-String zurück.
+	 */
+	function getPiece(square: string) {
+		const boardPosition = fen.split(" ")[0];
+	
+		const rows = boardPosition.split("/").map(row => row.replace(/\d/g, (match) => '1'.repeat(parseInt(match))));
+	
+		const file = square.charCodeAt(0) - 'a'.charCodeAt(0); 
+		const rank = 8 - parseInt(square[1]); 
+	
+		const piece = rows[rank][file];
+	
+		return piece === '1' ? 'empty' : piece;
+	}
+
+	/*
+	 * getLastMove
+	 * 
+	 * Gibt den letzten Zug zurück.
+	 */
 	const getLastMove=  (): MoveInfo | null => {
 		const last = moves.at(0);
 		if (last) {
@@ -233,10 +326,7 @@ export function GameProvider({ children }: PropsWithChildren) {
         return str.substr(0, index) + replacement + str.substr(index + 1);
     }
 
-
-
 	return (
-		
 		<GameContext.Provider value={{
 			fen: fen,
 			setFen: setFen,
