@@ -17,6 +17,7 @@ const myFont = localFont({
 const Game = () => {
 	const { fen, load, execute, getLastMove } = useGame();
 
+	
 	function onDrop(sourceSquare: any, targetSquare: any): boolean {
 		console.log("Piece dropped")
 		var move = sourceSquare + "-" + targetSquare;

@@ -1,5 +1,4 @@
 'use client'
-import Board from '@/components/Board'
 import { CreateButton } from '@/components/CreateButton'
 import { DebugButton } from '@/components/DebugButton'
 import { JoinButton } from '@/components/JoinButton'
