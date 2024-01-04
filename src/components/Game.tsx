@@ -5,19 +5,27 @@ import ScenarioLoader from "./ScenarioLoader";
 import MoveDetails from "./MoveDetails";
 import Feed from "./Feed";
 import { PromotionPieceOption } from "react-chessboard/dist/chessboard/types";
+import { Separator } from "./ui/separator";
+import localFont from 'next/font/local'
+
+
+const myFont = localFont({
+	src: '../fonts/Supreme-Variable.ttf',
+	display: 'swap',
+  })
 
 const Game = () => {
 	const { fen, load, execute, getLastMove } = useGame();
-	
+
 	function onDrop(sourceSquare: any, targetSquare: any): boolean {
 		console.log("Piece dropped")
 		var move = sourceSquare + "-" + targetSquare;
-        execute(move);
+		execute(move);
 		// add move history
 		return true;
 	}
 
-	function test(piece: PromotionPieceOption | undefined): boolean{
+	function test(piece: PromotionPieceOption | undefined): boolean {
 		console.log(piece);
 		return true;
 
@@ -27,21 +35,26 @@ const Game = () => {
 	function onSelection(fen: string) {
 		console.log("selection:", fen)
 		load(fen);
-    }
+	}
 
 	return (
 		<>
-			<div className="flex flex-1 h-full items-center justify-center flex-col gap-4 flex-wrap">
-				<ScenarioLoader onSelection={onSelection}/>
-				<MoveDetails info={getLastMove()}></MoveDetails>
-				<Feed />
-			</div>
+			<div className="flex rounded-lg space-x-4">
+				<div className="bg-zinc-900 rounded-lg shadow-xl border-1">
+					<div className="pl-3 pr-3 flex flex-1 h-full items-center pt-4 flex-col gap-4 flex-wrap">
+						<ScenarioLoader onSelection={onSelection} />
+						<Separator className="my-3 bg-white/30 rounded" />
+						<MoveDetails info={getLastMove()}></MoveDetails>
+						<Feed />
+					</div>
+				</div>
 
-			<div className="flex flex-wrap items-center justify-center space-y-2 h-screen bg-[#161618]">
-				<div className="flex items-center justify-center">
-					<Chessboard boardWidth={700} onPieceDrop={onDrop} position={fen}/>
+				<div className="rounded-lg overflow-hidden">
+					<Chessboard boardWidth={800} onPieceDrop={onDrop} position={fen} customLightSquareStyle={{ backgroundColor: "#d0d0d0" }} customDarkSquareStyle={{ backgroundColor: "#3a3a3a" }} />
 				</div>
 			</div>
+
+
 		</>
 	)
 }

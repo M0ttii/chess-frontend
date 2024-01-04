@@ -18,6 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <link href="https://api.fontshare.com/v2/css?f[]=supreme@800,400,100,500,1,700&display=swap" rel="stylesheet"></link>
       <body className={inter.className}>
           <div className="">
             <StompClientProvider>
