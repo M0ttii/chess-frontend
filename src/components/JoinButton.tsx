@@ -8,6 +8,8 @@ import { useForm } from "react-hook-form";
 import { SymbolIcon } from "@radix-ui/react-icons";
 import { useToast } from "./ui/use-toast";
 import { useRouter } from "next/navigation";
+import AbstractButton from "./AbstractButton";
+import { JoinIcon } from "@/assets/icons";
 
 
 export function JoinButton() {
@@ -77,7 +79,9 @@ export function JoinButton() {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="default" className='mx-auto dark font-semibold'>Join Game</Button>
+                <AbstractButton content="Join Game">
+                    <JoinIcon />
+                </AbstractButton>
             </DialogTrigger>
             <DialogContent className="dark absolute">
 

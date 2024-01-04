@@ -9,6 +9,9 @@ import { CopyIcon, SymbolIcon } from "@radix-ui/react-icons";
 import { useToast } from "./ui/use-toast";
 import { useStomp } from "@/ws/StompClientContext";
 import { useRouter } from "next/navigation";
+import AbstractButton from "./AbstractButton";
+import createIcon from "../../public/add-circle.svg";
+import { AddIcon } from "@/assets/icons";
 
 
 export function CreateButton() {
@@ -85,7 +88,9 @@ export function CreateButton() {
 	return (
 		<Dialog onOpenChange={createLobby}>
 			<DialogTrigger asChild>
-				<Button variant="default" className='mx-auto dark font-semibold'>Create Game</Button>
+				<AbstractButton content={"Create Game"}>
+					<AddIcon className="h-4 w-4"></AddIcon>
+				</AbstractButton>
 			</DialogTrigger>
 			<DialogContent className="dark absolute">
 
