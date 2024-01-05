@@ -14,6 +14,8 @@ import { useStomp } from "@/ws/StompClientContext";
 import { DebugMoveModel } from "@/model/DebugMessage";
 import { DebugModel } from "@/model/Debug";
 import { MoveInfo } from "@/model/MoveInfo";
+import { GameMoveModel } from "@/model/GameMoveModel";
+import { usePathname, useRouter } from "next/navigation";
 
 /*
  * GameContextProps
@@ -25,9 +27,6 @@ interface GameContextProps {
 	setFen: React.Dispatch<React.SetStateAction<string>>;
 	moves: MoveInfo[];
 	getLastMove(): MoveInfo | null;
-	createGame(): void;
-	startGame(fen: string): void;
-	load(fen: string): void;
 	execute(move: string): void;
 }
 
@@ -38,14 +37,11 @@ interface GameContextProps {
  * enthält.
  */
 export const GameContext = createContext<GameContextProps>({
-	fen: "",
+	fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
 	setFen: () => {},
 	moves: [],
 	// getLastMove: (): MoveInfo | null => {},
 	getLastMove: () => {return null},
-	createGame: () => {},
-	startGame: (fen: string) => {},
-	load: (fen: string) => {},
 	execute: (move: string) => {}
 });
 
@@ -62,10 +58,12 @@ export function GameProvider({ children }: PropsWithChildren) {
 	const [val, setVal] = useState("");
 	const [stompConnected, setStompConnected] = useState(false);
 	const eventHandlers: any = useRef({}).current;
-	const [fen, setFen] = useState("");
+	const [fen, setFen] = useState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 	const [moves, setMoves] = useState<MoveInfo[]>([]);
 	const [promoteTo, setPromoteTo] = useState(-1);
 	const { stompClient } = useStomp();
+	const path = usePathname();
+	const gameID = path.split("/").pop();
 
 	/*
 	 * useEffect
@@ -118,9 +116,12 @@ export function GameProvider({ children }: PropsWithChildren) {
 
 	useEffect(() => {
         if (stompConnected && stompClient) {
-            const subscription = stompClient.subscribe('/topic/debug/move/', message => {
+            const subscription = stompClient.subscribe('/topic/game/move/', message => {
                 var content = JSON.parse(message.body);
                 console.log("[SUB::Move] Received message:", content);
+				const moveInfo: MoveInfo = content.moveInfo;
+				const stateFen = moveInfo.stateFEN;
+				setFen(stateFen.toString());
                 if (eventHandlers[content.id]) {
                     console.log("[SUB::Move] Found handler for message ID:", content.id);
                     eventHandlers[content.id](content);
@@ -128,36 +129,10 @@ export function GameProvider({ children }: PropsWithChildren) {
                     console.log("[SUB::Move] No handler found for message ID:", content.id);
                 }
             });
-            const subscription1 = stompClient.subscribe('/topic/debug/fen/', message => {
-                var content = JSON.parse(message.body);
-                console.log("[SUB:Fen] Received message:", content);
-                if (eventHandlers[content.id]) {
-                    console.log("[SUB:Fen] Found handler for message ID:", content.id);
-                    eventHandlers[content.id](content);
-                } else {
-                    console.log("[SUB:Fen] No handler found for message ID:", content.id);
-                }
-            });
-
-            const subscriptionGame = stompClient.subscribe('/topic/debug/game/', message => {
-                var content = message.body;
-                if (content == 'done') {
-                    // setIsGame(true);
-                    // setOldFen(gameFen);
-                    console.log("[SUB:Game] 'done'");
-                } else if (content == 'error') {
-                    toast({
-                        description: 'Game could not be created.'
-                    })
-                }
-            });
-
             return () => {
                 // Kündigen Sie das Abonnement nur, wenn subscription existiert
                 if (subscription) {
                     subscription.unsubscribe();
-                    subscription1.unsubscribe();
-                    subscriptionGame.unsubscribe();
                 }
             };
         }
@@ -169,44 +144,16 @@ export function GameProvider({ children }: PropsWithChildren) {
 		
 	}
 
-	/*
-	 * startGame
-	 * 
-	 * Sendet eine Nachricht an den Server, um ein neues Spiel zu starten.
-	 */
-	async function startGame(fen: string) {
-		console.log("provider: start game");
-		if (stompClient && stompConnected) {
-			var message: DebugModel = {
-                fen: fen
-            }
-            stompClient.publish({ destination: '/debug/newgame', body: JSON.stringify(message) })
-		}
-	}
-
-	/*
-	 * load
-	 * 
-	 * Sendet eine Nachricht an den Server, um ein neues Spiel mit Start-FEN zu starten.
-	 */
-	const load = (fen: string) => {
-		console.log("game: loading with", fen);
-		if (stompClient && stompConnected) {
-			var message: DebugModel = {
-                fen: fen
-            }
-            stompClient.publish({ destination: '/debug/newgame', body: JSON.stringify(message) })
-		}
-		setFen(fen);
-	}
+	
 
 	/*
 	 * execute
 	 * 
 	 * Sendet eine Nachricht an den Server, um einen Zug auszuführen.
 	 */
-	
-	const execute = (move: string) => {
+
+	function generateTempFen(move: string): {newFen: string, to: number[]} {
+		console.log("execute", move);
         // Zerlegen des FEN-Strings in seine Hauptkomponenten
         let [position, turn, castling, enPassant, halfMove, fullMove] = fen.split(" ");
     
@@ -229,13 +176,20 @@ export function GameProvider({ children }: PropsWithChildren) {
         const newPosition = rows.map(row => row.replace(/1+/g, match => match.length.toString())).join("/");
     
         const newFen = `${newPosition} ${turn} ${castling} ${enPassant} ${halfMove} ${fullMove}`;
+		return {
+			newFen: newFen,
+			to: to
+		};
 
-		console.log("Piece on square " + getPiece(move.split("-")[0]) )
-		console.log("Target square" + to)
-
-		var message: DebugMoveModel;
+	}
+	
+	const execute = (move: string) => {
+		const {newFen, to} = generateTempFen(move);
+		var message: GameMoveModel;
 		message = {
             id:  Math.floor(Math.random() * 1000),
+			gameId: gameID!,
+			playerId: localStorage.getItem("id")!,
             move: move,
             promoteTo: -1
         }
@@ -244,13 +198,15 @@ export function GameProvider({ children }: PropsWithChildren) {
 				console.log("Promotion");
 				message = {
 					id:  Math.floor(Math.random() * 1000),
+					playerId: localStorage.getItem("id")!,
+					gameId: gameID!,
 					move: move,
 					promoteTo: 1
 				}
 			}
 		}
-
-		sendAwaitResponse("/debug/move", message)
+		console.log("Message: ", message);
+		sendAwaitResponse("/game/move", message)
 		.then((info: MoveInfo) => {
 			console.log("resolve", info);
 			if (info.legal) {
@@ -271,6 +227,7 @@ export function GameProvider({ children }: PropsWithChildren) {
 	 * Die Antwort wird als Promise zurückgegeben.
 	 */
 	function sendAwaitResponse(destination: string, message: AbstractMessageModel): Promise<MoveInfo> {
+		console.log("sendAwaitResponse", message);
 		return new Promise(async (resolve, reject) => {
             const messageId = message.id
 			// register event handler
@@ -280,6 +237,7 @@ export function GameProvider({ children }: PropsWithChildren) {
 					resolve(moveInfo);
             };
 			if (stompConnected) {
+				console.log("publish")
                 stompClient?.publish({ destination: destination, body: JSON.stringify(message) });
             }
 			setTimeout(() => {
@@ -334,9 +292,6 @@ export function GameProvider({ children }: PropsWithChildren) {
 			// stompClient: stompClient, 
 			// setStompClient: setStompClient, 
 			getLastMove: getLastMove,
-			createGame: createGame,
-			startGame: startGame,
-			load: load,
 			execute: execute
 		}}>
 				{ children }

@@ -1,4 +1,4 @@
-import { useGame } from "@/app/gameCtxDebug"
+import { useGame } from "@/app/gameCtx"
 import * as React from 'react';
 import { Chessboard } from "react-chessboard";
 import ScenarioLoader from "../ScenarioLoader";
@@ -18,25 +18,21 @@ const myFont = localFont({
 })
 
 const Game = () => {
-    /* function onDrop(sourceSquare: any, targetSquare: any): boolean {
+    const { fen, execute, getLastMove } = useGame();
+
+     function onDrop(sourceSquare: any, targetSquare: any): boolean {
         console.log("Piece dropped")
         var move = sourceSquare + "-" + targetSquare;
         execute(move);
         // add move history
         return true;
-    } */
+    } 
 
-    /* function test(piece: PromotionPieceOption | undefined): boolean {
+     function test(piece: PromotionPieceOption | undefined): boolean {
         console.log(piece);
         return true;
 
     }
-
-
-    function onSelection(fen: string) {
-        console.log("selection:", fen)
-        load(fen);
-    } */
 
     return (
         <>
@@ -49,7 +45,7 @@ const Game = () => {
                         </div>
                         <div className="flex space-x-5">
                             <div className="flex space-x-5 rounded-lg overflow-hidden border-[8px] border-[#1F1F1F]">
-                                <Chessboard boardWidth={700} customLightSquareStyle={{ backgroundColor: "#F2F2F2" }} customDarkSquareStyle={{ backgroundColor: "#848484" }} />
+                                <Chessboard boardWidth={700} position={fen} onPieceDrop={onDrop} customLightSquareStyle={{ backgroundColor: "#F2F2F2" }} customDarkSquareStyle={{ backgroundColor: "#848484" }} />
                             </div>
                         </div>
                         <div className="flex w-full justify-between pt-3">
