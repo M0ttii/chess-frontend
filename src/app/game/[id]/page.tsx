@@ -1,10 +1,10 @@
 'use client'
+import Game from "@/components/game/Game";
+
 export default function Home() {
   return (
-    <div className="flex w-full items-center justify-center">
-      <div className="h-full w-full"> 
-        <div className=""></div>
-      </div>
+    <div className="h-full flex  items-center justify-center bg-[#121318]">
+      <Game />
     </div>
   )
 }

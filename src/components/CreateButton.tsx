@@ -20,24 +20,33 @@ export function CreateButton() {
 	const [game, setGame] = useState('');
 	const router = useRouter()
 	const [open, setOpen] = useState(false);
+	const [stompConnected, setStompConnected] = useState(false);
 	const form = useForm()
 	const { toast } = useToast()
 
+	useEffect(() => {
+		if (stompClient) {
+			if (!stompClient.active) {
+				stompClient.activate();
+			}
 
-	if (stompClient) {
-		stompClient.onConnect = (frame) => {
-			console.log("Connected")
+			const onConnect = () => {
+				console.log("STOMP: connected");
+				setStompConnected(true);
+			};
+
+			const onDisconnect = () => {
+				console.log('STOMP: disconnected');
+				setStompConnected(false)
+			};
+
+			if (stompClient) {
+				stompClient.onConnect = onConnect;
+				stompClient.onDisconnect = onDisconnect;
+			}
+
 		}
-
-		stompClient.onWebSocketError = (error) => {
-			console.error('Error with websocket', error);
-		};
-
-		stompClient.onStompError = (frame) => {
-			console.error('Broker reported error: ' + frame.headers['message']);
-			console.error('Additional details: ' + frame.body);
-		};
-	}
+	}, [stompClient]);
 
 	async function createLobby(state: boolean) {
 		console.log(state)
@@ -67,20 +76,17 @@ export function CreateButton() {
 			setGame(data.id);
 			console.log("Lobby ID " + data.id);
 			console.log("Game: " + game)
-			if (stompClient) {
-				if(!stompClient.active){
-					stompClient.activate();
-				}
-				if(stompClient.connected){
-					stompClient.subscribe('/topic/lobby/' + data.id, message => {
-						console.log("Second player joined")
-						router.push('/game/' + data.id)
-					})
-				}
-				//stompClient.publish({destination: '/app/test', body: JSON.stringify({'id': '123'})})
-				//if(stompClient.connected)
-				//stompClient.publish({destination: '/test', body: 'Message'});
+
+			if (stompConnected && stompClient) {
+				stompClient.subscribe('/topic/lobby/' + data.id, message => {
+					console.log("Second player joined")
+					router.push('/game/' + data.id)
+				})
 			}
+			//stompClient.publish({destination: '/app/test', body: JSON.stringify({'id': '123'})})
+			//if(stompClient.connected)
+			//stompClient.publish({destination: '/test', body: 'Message'});
+
 		}
 
 	}

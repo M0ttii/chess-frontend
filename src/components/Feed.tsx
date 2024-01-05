@@ -1,4 +1,4 @@
-import { useGame } from "@/app/gameCtx";
+import { useGame } from "@/app/gameCtxDebug";
 
 const items: string[] = ["Move A", "Move B", "Move C", "Move D", "Move E"]
 const Feed = () => {

@@ -12,7 +12,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import * as React from 'react';
-import { useGame } from "@/app/gameCtx";
+import { useGame } from "@/app/gameCtxDebug";
 
 interface ScenarioLoaderProps {
 	onSelection: (fen: string) => void

@@ -1,4 +1,4 @@
-import { useGame } from "@/app/gameCtx"
+import { useGame } from "@/app/gameCtxDebug"
 import * as React from 'react';
 import { Chessboard } from "react-chessboard";
 import ScenarioLoader from "./ScenarioLoader";
@@ -14,7 +14,7 @@ const myFont = localFont({
 	display: 'swap',
   })
 
-const Game = () => {
+const DebugGame = () => {
 	const { fen, load, execute, getLastMove } = useGame();
 
 	
@@ -60,4 +60,4 @@ const Game = () => {
 	)
 }
 
-export default Game;
+export default DebugGame;

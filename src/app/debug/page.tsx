@@ -1,6 +1,7 @@
 'use client'
-import Game from "@/components/Game";
-import { GameProvider } from "../gameCtx";
+import Game from "@/components/GameDebug";
+import { GameProvider } from "../gameCtxDebug";
+import DebugGame from "@/components/GameDebug";
 
 export default function Home() {
 
@@ -19,9 +20,9 @@ export default function Home() {
     }
 
     return (
-      <div className="flex w-full h-screen items-center justify-center bg-[#111115]">
+      <div className="bg-[#111115]">
         <GameProvider>
-          <Game />
+          <DebugGame></DebugGame>
         </GameProvider>
       </div>
     )
