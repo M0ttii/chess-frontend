@@ -10,6 +10,7 @@ import localFont from 'next/font/local'
 import { GameHistory } from "./GameHistory";
 import { PlayerName } from "./PlayerName";
 import { Time } from "./Time";
+import { useRouter } from "next/navigation";
 
 
 const myFont = localFont({
@@ -19,6 +20,11 @@ const myFont = localFont({
 
 const Game = () => {
     const { fen, execute, getLastMove } = useGame();
+    const router = useRouter();
+
+    React.useEffect(() => {
+        router.refresh();
+    }, []);
 
      function onDrop(sourceSquare: any, targetSquare: any): boolean {
         console.log("Piece dropped")

@@ -77,7 +77,10 @@ export function GameProvider({ children }: PropsWithChildren) {
 		if (stompClient) {
             if (!stompClient.active) {
                 stompClient.activate();
-            }
+            } else {
+				console.log("stompClient already active");
+				setStompConnected(true);
+			}
 
             const onConnect = () => {
                 console.log("STOMP: connected");
@@ -101,6 +104,8 @@ export function GameProvider({ children }: PropsWithChildren) {
             //     }
             // };
         
+		} else {
+			console.log("stompClient is null");
 		}
 	}, [stompClient]);
 
@@ -120,8 +125,10 @@ export function GameProvider({ children }: PropsWithChildren) {
                 var content = JSON.parse(message.body);
                 console.log("[SUB::Move] Received message:", content);
 				const moveInfo: MoveInfo = content.moveInfo;
-				const stateFen = moveInfo.stateFEN;
-				setFen(stateFen.toString());
+				if(moveInfo.legal){
+					const stateFen = moveInfo.stateFEN;
+					setFen(stateFen.toString());
+				}
                 if (eventHandlers[content.id]) {
                     console.log("[SUB::Move] Found handler for message ID:", content.id);
                     eventHandlers[content.id](content);
@@ -206,7 +213,11 @@ export function GameProvider({ children }: PropsWithChildren) {
 			}
 		}
 		console.log("Message: ", message);
-		sendAwaitResponse("/game/move", message)
+
+		if (stompConnected) {
+			stompClient?.publish({ destination: "/game/move", body: JSON.stringify(message) });
+		}
+		/* sendAwaitResponse("/game/move", message)
 		.then((info: MoveInfo) => {
 			console.log("resolve", info);
 			if (info.legal) {
@@ -216,7 +227,7 @@ export function GameProvider({ children }: PropsWithChildren) {
 		})
 		.catch(() => {
 			console.log("send and await timed out");
-		})
+		}) */
 	}
 
 	/*

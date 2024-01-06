@@ -20,8 +20,8 @@ export function useStomp() {
 
 export function StompClientProvider({ children }: ScriptProps) {
     const [stompClient, setStompClient] = useState<Client | null>(null);
+
     useEffect(() => {
-        //const sockJS = new SockJS("http://localhost:8080/test");
         const client = new Client({
             brokerURL: 'ws://localhost:8080/debug',
             debug: function (str) {
@@ -30,36 +30,34 @@ export function StompClientProvider({ children }: ScriptProps) {
             reconnectDelay: 5000,
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
+            onConnect: function (frame) {
+                console.log('Connected: ' + frame);
+                // Weitere Logik hier
+            },
+            onStompError: function (frame) {
+                console.log('Broker reported error: ' + frame.headers['message']);
+                console.log('Additional details: ' + frame.body);
+            },
         });
+
         setStompClient(client);
 
+        // Aktivieren Sie den Client
+        if (!client.active) {
+            client.activate();
+        }
+
+        // Cleanup-Funktion
         return () => {
-            if (client && client.connected) {
-                //client.disconnect();
+            if (client.connected) {
+                client.deactivate();
             }
         }
     }, []);
-
-    if (stompClient) {
-
-        stompClient.onConnect = function (frame) {
-            // Do something, all subscribes must be done is this callback
-            // This is needed because this will be executed after a (re)connect
-        };
-
-        stompClient.onStompError = function (frame) {
-            // Will be invoked in case of error encountered at Broker
-            // Bad login/passcode typically will cause an error
-            // Complaint brokers will set `message` header with a brief message. Body may contain details.
-            // Compliant brokers will terminate the connection after any error
-            console.log('Broker reported error: ' + frame.headers['message']);
-            console.log('Additional details: ' + frame.body);
-        };
-    }
 
     return (
         <StompClientContext.Provider value={{ stompClient, setStompClient }}>
             {children}
         </StompClientContext.Provider>
-    )
+    );
 }

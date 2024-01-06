@@ -81,6 +81,7 @@ export function CreateButton() {
 				stompClient.subscribe('/topic/lobby/' + data.id, message => {
 					console.log("Second player joined")
 					router.push('/game/' + data.id)
+
 				})
 			}
 			//stompClient.publish({destination: '/app/test', body: JSON.stringify({'id': '123'})})
