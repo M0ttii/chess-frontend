@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
+import AbstractButton from "./AbstractButton";
+import { PawnIcon } from "@/assets/icons";
 
 
 export function DebugButton() {
@@ -13,7 +15,9 @@ export function DebugButton() {
     }
 
 	return (
-        <Button onClick={nav}>Debug</Button>
+        <AbstractButton content="Debug" onClick={nav}>
+            <PawnIcon></PawnIcon>
+        </AbstractButton>
         
     )
 }

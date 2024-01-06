@@ -1,0 +1,15 @@
+.gradient {
+    position: relative;
+  }
+  
+  .gradient:before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(to right, pink, purple);
+    z-index: -1;
+    border-radius: inherit;
+  }

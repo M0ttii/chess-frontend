@@ -12,6 +12,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import * as React from 'react';
+import { useGame } from "@/app/gameCtxDebug";
 
 interface ScenarioLoaderProps {
 	onSelection: (fen: string) => void
@@ -19,6 +20,9 @@ interface ScenarioLoaderProps {
 
 const ScenarioLoader = (props: ScenarioLoaderProps) => {
 	const [input, setInput] = useState("");
+
+    const {load} = useGame();
+
 
 	const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		// TODO add delay
@@ -35,7 +39,7 @@ const ScenarioLoader = (props: ScenarioLoaderProps) => {
 
 	return (
 		<div className="grid grid-cols-2 gap-2 w-96">
-			<Input className="dark col-span-2" type="email" onChange={onChange} placeholder="FEN string" value={input} />
+			<Input className="dark border-zinc-600 focus:outline-none focus:border-[#7373FF]  col-span-2" type="email" onChange={onChange} placeholder="FEN string" value={input} />
 			<Select onValueChange={onScenarioSelection} >
 				<SelectTrigger className="w-[180px]">
 					<SelectValue placeholder="Placeholder" />

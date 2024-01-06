@@ -20,7 +20,6 @@ export function useStomp() {
 
 export function StompClientProvider({ children }: ScriptProps) {
     const [stompClient, setStompClient] = useState<Client | null>(null);
-    console.log("Test")
     useEffect(() => {
         //const sockJS = new SockJS("http://localhost:8080/test");
         const client = new Client({

@@ -1,12 +1,11 @@
 'use client'
-
-import Board from "@/components/Board";
-import { Button } from "@/components/ui/button";
+import Game from "@/components/GameDebug";
+import { GameProvider } from "../gameCtxDebug";
+import DebugGame from "@/components/GameDebug";
 
 export default function Home() {
 
     async function setupGame(){
-
         const gameCreateRes = await fetch("http://localhost:8080/game", {
                 method: 'POST',
                 headers: {
@@ -20,16 +19,11 @@ export default function Home() {
             const gameID = gameCreateResData.id;
     }
 
-    function test(){
-      
-    }
-
-
     return (
-      <div className="flex w-full h-screen items-center justify-center">
-        <div className="h-screen w-full bg-red-300">
-          <Board />
-        </div>
+      <div className="bg-[#111115]">
+        <GameProvider>
+          <DebugGame></DebugGame>
+        </GameProvider>
       </div>
     )
   }

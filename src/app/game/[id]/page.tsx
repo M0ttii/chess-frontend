@@ -1,13 +1,13 @@
 'use client'
-import Board from '@/components/Board'
+import { GameProvider } from "@/app/gameCtx";
+import Game from "@/components/game/Game";
 
 export default function Home() {
   return (
-    <div className="flex w-full items-center justify-center">
-      <div className="h-full w-full">
-        <Board></Board>
-        
-      </div>
+    <div className="h-full flex  items-center justify-center bg-[#121318]">
+      <GameProvider>
+        <Game />
+      </GameProvider>
     </div>
   )
 }
