@@ -28,6 +28,8 @@ interface GameContextProps {
 	moves: MoveInfo[];
 	getLastMove(): MoveInfo | null;
 	execute(move: string): void;
+	isWhiteTimerRunning: boolean;
+	isBlackTimerRunning: boolean;
 }
 
 /*
@@ -42,7 +44,10 @@ export const GameContext = createContext<GameContextProps>({
 	moves: [],
 	// getLastMove: (): MoveInfo | null => {},
 	getLastMove: () => {return null},
-	execute: (move: string) => {}
+	execute: (move: string) => {},
+	isWhiteTimerRunning: false,
+	isBlackTimerRunning: false,
+	
 });
 
 export function useGame() {
@@ -64,6 +69,28 @@ export function GameProvider({ children }: PropsWithChildren) {
 	const { stompClient } = useStomp();
 	const path = usePathname();
 	const gameID = path.split("/").pop();
+
+	const [isWhiteTimerRunning, setIsWhiteTimerRunning] = useState(false);
+	const [isBlackTimerRunning, setIsBlackTimerRunning] = useState(false);
+
+	const [currentTimeWhite, setCurrentTimeWhite] = useState();
+	const [currentTimeBlack, setCurrentTimeBlack] = useState();
+
+	const startWhiteTimer = () => {
+		setIsWhiteTimerRunning(true);
+	}
+
+	const stopWhiteTimer = () => {
+		setIsWhiteTimerRunning(false);
+	}
+
+	const startBlackTimer = () => {
+		setIsBlackTimerRunning(true);
+	}
+
+	const stopBlackTimer = () => {
+		setIsBlackTimerRunning(false);
+	}
 
 	/*
 	 * useEffect
@@ -125,9 +152,21 @@ export function GameProvider({ children }: PropsWithChildren) {
                 var content = JSON.parse(message.body);
                 console.log("[SUB::Move] Received message:", content);
 				const moveInfo: MoveInfo = content.moveInfo;
+				const whiteTimeLeft = content.whiteTimeLeft / 60000;
+				const blackTimeLeft = content.blackTimeLeft / 60000;
+				console.log("whiteTimeLeft: " + whiteTimeLeft);
+				console.log("blackTimeLeft: " + blackTimeLeft);
 				if(moveInfo.legal){
 					const stateFen = moveInfo.stateFEN;
 					setFen(stateFen.toString());
+					if(moveInfo.playerColor == 1){
+						setIsWhiteTimerRunning(true);
+						setIsBlackTimerRunning(false);
+					}
+					if (moveInfo.playerColor == 0) {
+						setIsWhiteTimerRunning(false);
+						setIsBlackTimerRunning(true);
+					}
 				}
                 if (eventHandlers[content.id]) {
                     console.log("[SUB::Move] Found handler for message ID:", content.id);
@@ -303,7 +342,9 @@ export function GameProvider({ children }: PropsWithChildren) {
 			// stompClient: stompClient, 
 			// setStompClient: setStompClient, 
 			getLastMove: getLastMove,
-			execute: execute
+			execute: execute,
+			isWhiteTimerRunning: isWhiteTimerRunning,
+			isBlackTimerRunning: isBlackTimerRunning,
 		}}>
 				{ children }
 		</GameContext.Provider>

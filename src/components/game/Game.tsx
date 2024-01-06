@@ -19,8 +19,9 @@ const myFont = localFont({
 })
 
 const Game = () => {
-    const { fen, execute, getLastMove } = useGame();
+    const { fen, execute, isBlackTimerRunning, isWhiteTimerRunning} = useGame();
     const router = useRouter();
+
 
     React.useEffect(() => {
         router.refresh();
@@ -47,7 +48,7 @@ const Game = () => {
                     <div className="flex flex-col items-start">
                         <div className="flex w-full justify-between">
                             <PlayerName />
-                            <Time></Time>
+                            <Time initialTime={300000} isRunning={isBlackTimerRunning} ></Time>
                         </div>
                         <div className="flex space-x-5">
                             <div className="flex space-x-5 rounded-lg overflow-hidden border-[8px] border-[#1F1F1F]">
@@ -56,7 +57,7 @@ const Game = () => {
                         </div>
                         <div className="flex w-full justify-between pt-3">
                             <PlayerName />
-                            <Time></Time>
+                            <Time initialTime={300000} isRunning={isWhiteTimerRunning}></Time>
                         </div>
                     </div>
                     <GameHistory />
