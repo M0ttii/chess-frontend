@@ -20,7 +20,7 @@ const myFont = localFont({
 })
 
 const Game = () => {
-    const { fen, execute, isBlackTimerRunning, isWhiteTimerRunning, moveHistory, blackPlayerId, whitePlayerId} = useGame();
+    const { fen, execute, isBlackTimerRunning, isWhiteTimerRunning, moveHistory, whitePlayerId, whiteTimeLeft, blackTimeLeft} = useGame();
     const router = useRouter();
     
     const [playerID, setPlayerID] = useState<string | null>(null);
@@ -49,6 +49,8 @@ const Game = () => {
         return playerID === whitePlayerId ? 'white' : 'black';
     };
 
+    const isPlayerWhite = getBoardOrientation() === "white";
+
     return (
         <>
             <div className="flex justify-center items-center h-screen rounded-lg space-x-4">
@@ -56,7 +58,7 @@ const Game = () => {
                     <div className="flex flex-col items-start">
                         <div className="flex w-full justify-between">
                             <PlayerName />
-                            <Time initialTime={300000} isRunning={isBlackTimerRunning} ></Time>
+                            <Time initialTime={300000} isRunning={isPlayerWhite ? isBlackTimerRunning : isWhiteTimerRunning} currentTime={isPlayerWhite ? blackTimeLeft : whiteTimeLeft} ></Time>
                         </div>
                         <div className="flex space-x-5">
                             <div className="flex space-x-5 rounded-lg overflow-hidden border-[8px] border-[#1F1F1F]">
@@ -66,7 +68,7 @@ const Game = () => {
                         </div>
                         <div className="flex w-full justify-between pt-3">
                             <PlayerName />
-                            <Time initialTime={300000} isRunning={isWhiteTimerRunning}></Time>
+                            <Time initialTime={300000} isRunning={isPlayerWhite ? isWhiteTimerRunning : isBlackTimerRunning} currentTime={isPlayerWhite ? whiteTimeLeft : blackTimeLeft}></Time>
                         </div>
                     </div>
                     <GameHistory moveHistory={moveHistory}/>

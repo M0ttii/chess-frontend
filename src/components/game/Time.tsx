@@ -12,7 +12,7 @@ export const roboto_mono = Roboto({
 interface TimeProps {
 	initialTime: number;
 	isRunning: boolean;
-	currentTime?: number;
+	currentTime: number;
 }
 
 export const Time = (props: TimeProps) => {

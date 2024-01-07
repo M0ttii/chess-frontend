@@ -34,6 +34,8 @@ interface GameContextProps {
 	isBlackTimerRunning: boolean;
 	whitePlayerId: string;
 	blackPlayerId: string;
+	whiteTimeLeft: number;
+	blackTimeLeft: number;
 }
 
 /*
@@ -54,6 +56,8 @@ export const GameContext = createContext<GameContextProps>({
 	isBlackTimerRunning: false,
 	whitePlayerId: "",
 	blackPlayerId: "",
+	whiteTimeLeft: 300000,
+	blackTimeLeft: 300000
 
 });
 
@@ -81,8 +85,8 @@ export function GameProvider({ children }: PropsWithChildren) {
 	const [isWhiteTimerRunning, setIsWhiteTimerRunning] = useState(false);
 	const [isBlackTimerRunning, setIsBlackTimerRunning] = useState(false);
 
-	const [currentTimeWhite, setCurrentTimeWhite] = useState();
-	const [currentTimeBlack, setCurrentTimeBlack] = useState();
+	const [whiteTimeLeft, setWhiteTimeLeft] = useState(300000);
+	const [blackTimeLeft, setBlackTimeLeft] = useState(300000);
 
 	const [whitePlayerId, setWhitePlayerId] = useState("");
 	const [blackPlayerId, setBlackPlayerId] = useState("");
@@ -182,11 +186,9 @@ export function GameProvider({ children }: PropsWithChildren) {
 				var content = JSON.parse(message.body);
 				console.log("[SUB::Move] Received message:", content);
 				const moveInfo: MoveInfo = content.moveInfo;
-				const whiteTimeLeft = content.whiteTimeLeft / 60000;
-				const blackTimeLeft = content.blackTimeLeft / 60000;
-				console.log("whiteTimeLeft: " + whiteTimeLeft);
-				console.log("blackTimeLeft: " + blackTimeLeft);
 				if (moveInfo.legal) {
+					setWhiteTimeLeft(content.whiteTimeLeft);
+					setBlackTimeLeft(content.blackTimeLeft);
 					addMove(new Date(), moveInfo);
 					const stateFen = moveInfo.stateFEN;
 					setFen(stateFen.toString());
@@ -215,6 +217,18 @@ export function GameProvider({ children }: PropsWithChildren) {
 		}
 		console.log("use effect handling subscriptions");
 	}, [isConnected, stompClient]);
+
+	useEffect(() => {
+		console.log("Aktualisierter whiteTimeLeft: " + whiteTimeLeft);
+		console.log("Aktualisierter blackTimeLeft: " + blackTimeLeft);
+
+		const whiteTimeInSeconds = whiteTimeLeft / 1000;
+
+		const minutes = Math.floor(whiteTimeInSeconds / 60);
+  		const seconds = whiteTimeInSeconds % 60;
+		const formattedTime = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+		console.log("Aktualisiert White Minuten: " + formattedTime)
+	}, [whiteTimeLeft, blackTimeLeft]);
 
 	const createGame = () => {
 		console.log("provider: create game");
@@ -384,7 +398,9 @@ return (
 		isWhiteTimerRunning: isWhiteTimerRunning,
 		isBlackTimerRunning: isBlackTimerRunning,
 		whitePlayerId: whitePlayerId,
-		blackPlayerId: blackPlayerId
+		blackPlayerId: blackPlayerId,
+		whiteTimeLeft: whiteTimeLeft,
+		blackTimeLeft: blackTimeLeft,
 	}}>
 		{children}
 	</GameContext.Provider>
