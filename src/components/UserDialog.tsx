@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Input } from "./ui/input";
+import local from "next/font/local";
 
 
 
@@ -33,6 +34,7 @@ const UserDialog = ( {open, setOpen} : {open: any, setOpen: any} ) => {
       
           // Verwenden Sie die Antwortdaten wie gewünscht...
           localStorage.setItem("id", data.id); // Speichern der ID aus der Antwort, nicht den Username.
+          localStorage.setItem("username", username);
       
           // Schließen Sie das Dialogfenster, wenn die Anfrage erfolgreich war.
           setOpen(false);

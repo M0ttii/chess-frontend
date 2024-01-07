@@ -11,6 +11,7 @@ import { GameHistory } from "./GameHistory";
 import { PlayerName } from "./PlayerName";
 import { Time } from "./Time";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 
 const myFont = localFont({
@@ -19,12 +20,15 @@ const myFont = localFont({
 })
 
 const Game = () => {
-    const { fen, execute, isBlackTimerRunning, isWhiteTimerRunning} = useGame();
+    const { fen, execute, isBlackTimerRunning, isWhiteTimerRunning, moveHistory, blackPlayerId, whitePlayerId} = useGame();
     const router = useRouter();
-
+    
+    const [playerID, setPlayerID] = useState<string | null>(null);
 
     React.useEffect(() => {
-        router.refresh();
+        // Dieser Code wird nur im Browser ausgeführt, nicht beim Server-Side Rendering
+        const storedPlayerID = localStorage.getItem("id");
+        setPlayerID(storedPlayerID);
     }, []);
 
      function onDrop(sourceSquare: any, targetSquare: any): boolean {
@@ -41,6 +45,10 @@ const Game = () => {
 
     }
 
+    const getBoardOrientation = () => {
+        return playerID === whitePlayerId ? 'white' : 'black';
+    };
+
     return (
         <>
             <div className="flex justify-center items-center h-screen rounded-lg space-x-4">
@@ -52,7 +60,8 @@ const Game = () => {
                         </div>
                         <div className="flex space-x-5">
                             <div className="flex space-x-5 rounded-lg overflow-hidden border-[8px] border-[#1F1F1F]">
-                                <Chessboard boardWidth={700} position={fen} onPieceDrop={onDrop} customLightSquareStyle={{ backgroundColor: "#F2F2F2" }} customDarkSquareStyle={{ backgroundColor: "#848484" }} />
+
+                                <Chessboard boardWidth={700} boardOrientation={getBoardOrientation()} position={fen} onPieceDrop={onDrop} customLightSquareStyle={{ backgroundColor: "#F2F2F2" }} customDarkSquareStyle={{ backgroundColor: "#848484" }} />
                             </div>
                         </div>
                         <div className="flex w-full justify-between pt-3">
@@ -60,7 +69,7 @@ const Game = () => {
                             <Time initialTime={300000} isRunning={isWhiteTimerRunning}></Time>
                         </div>
                     </div>
-                    <GameHistory />
+                    <GameHistory moveHistory={moveHistory}/>
                     {/* GameHistory neben dem Schachbrett */}
                 </div>
             </div>
