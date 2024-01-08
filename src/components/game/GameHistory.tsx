@@ -6,6 +6,7 @@ import localFont from "next/font/local";
 import { Label } from "../ui/label";
 import { cn } from "@/lib/utils";
 import { Move, MoveInfo } from "@/model/MoveInfo";
+import { SurrenderButton } from "./SurrenderButton";
 
 interface AbstractButtonProps {
 	content: string;
@@ -84,7 +85,7 @@ export const GameHistory = (props: GameHistoryProps) => {
 				</div>
 				<div className="flex p-3 space-x-2 justify-center">
 					<Button className="w-full">Remis</Button>
-					<Button className="w-full bg-[#E05E5E] text-white">Surrender</Button>
+					<SurrenderButton></SurrenderButton>
 				</div>
 			</div>
 		</div>

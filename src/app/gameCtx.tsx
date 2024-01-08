@@ -5,7 +5,8 @@ import {
 	PropsWithChildren,
 	useState,
 	useRef,
-	useEffect
+	useEffect,
+	use
 } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { AbstractMessageModel } from "@/model/Debug";
@@ -17,6 +18,8 @@ import { MoveInfo } from "@/model/MoveInfo";
 import { GameMoveModel } from "@/model/GameMoveModel";
 import { usePathname, useRouter } from "next/navigation";
 import { set } from "react-hook-form";
+import { Tienne } from "next/font/google";
+import { time } from "console";
 
 /*
  * GameContextProps
@@ -73,12 +76,13 @@ export function useGame() {
 export function GameProvider({ children }: PropsWithChildren) {
 	const [val, setVal] = useState("");
 	const eventHandlers: any = useRef({}).current;
-	const [fen, setFen] = useState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 1 1");
+	const [fen, setFen] = useState("");
 	const [moves, setMoves] = useState<MoveInfo[]>([]);
 	const [promoteTo, setPromoteTo] = useState(-1);
 	const { stompClient, isConnected } = useStomp();
 	const path = usePathname();
 	const gameID = path.split("/").pop();
+	const [stompInit, setStompInit] = useState(false);
 
 	const [moveHistory, setMoveHistory] = useState<Array<Map<Date, MoveInfo>>>([]);
 
@@ -115,13 +119,23 @@ export function GameProvider({ children }: PropsWithChildren) {
 	 * Wenn stompClient nicht null ist, wird der Client aktiviert und die
 	 * onConnect- und onDisconnect-Handler gesetzt.
 	 */
+
+	useEffect(() => {
+		setFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+	}, []);
+
 	useEffect(() => {
 		if (isConnected) {
 			console.log("STOMP: connected");
+			setStompInit(true);
 		} else {
 			console.log("stompClient is null or disconnected");
 		}
 	}, [isConnected]);
+
+	function timeout(delay: number) {
+		return new Promise( res => setTimeout(res, delay) );
+	}
 
 	useEffect(() => {
 		const fetchGame = async () => {
@@ -133,22 +147,33 @@ export function GameProvider({ children }: PropsWithChildren) {
 			  if(data != null){
 				  setBlackPlayerId(data.blackPlayerId);
 				  setWhitePlayerId(data.whitePlayerId);
+				  console.log("Game ", data);
+				  setWhiteTimeLeft(data.chessClock.whiteTimeLeft);
+				  setBlackTimeLeft(data.chessClock.blackTimeLeft);
+				  data.game.activeColor == 0 ? setIsWhiteTimerRunning(true) : setIsBlackTimerRunning(true);
 				  if(data.game.lastMoveFen != null){
+					await timeout(300);
 					setFen(data.game.lastMoveFen);
 				  }
 				  console.log("blackPlayerId: " + data.blackPlayerId);
 				  console.log("whitePlayerId: " + data.whitePlayerId);
 			  }
 			} else {
+				setFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
 			  throw new Error('Fehler beim Laden der Daten');
 			}
 		  } catch (error) {
-			console.error('Fehler beim Laden der moveHistory:', error);
+			console.error('Fehler beim Laden der Daten:', error);
 		  }
 		};
 	
 		fetchGame();
 	  }, []);
+
+	  useEffect(() => {
+		console.log("Aktualisierter FEN: ", fen);
+		setFen(fen);
+	  }, [fen]);
 
 	useEffect(() => {
 		const fetchMoveHistory = async () => {
@@ -181,7 +206,8 @@ export function GameProvider({ children }: PropsWithChildren) {
 	 */
 
 	useEffect(() => {
-		if (isConnected && stompClient) {
+		if (stompInit && isConnected && stompClient) {
+			console.log("USE EFFECT isConnected && stompClient")
 			const subscription = stompClient.subscribe('/topic/game/move/', message => {
 				var content = JSON.parse(message.body);
 				console.log("[SUB::Move] Received message:", content);
@@ -216,7 +242,7 @@ export function GameProvider({ children }: PropsWithChildren) {
 			};
 		}
 		console.log("use effect handling subscriptions");
-	}, [isConnected, stompClient]);
+	}, [stompInit]);
 
 	useEffect(() => {
 		console.log("Aktualisierter whiteTimeLeft: " + whiteTimeLeft);
