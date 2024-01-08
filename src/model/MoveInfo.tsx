@@ -1,7 +1,7 @@
 export type MoveInfo = {
 	legal: boolean;
 	playerColor: number;
-	gameState: number;
+	gameState: string;
 	move: Move;
 	stateFEN: String;
 	failMessage: String;

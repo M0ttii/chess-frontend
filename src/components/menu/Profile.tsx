@@ -1,8 +1,9 @@
 import { cn } from "@/lib/utils";
 import localFont from "next/font/local";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Separator } from "../ui/separator";
 import Image from "next/image";
+import { set } from "react-hook-form";
 
 const myFont = localFont({
     src: '../../fonts/Supreme-Variable.ttf',
@@ -17,10 +18,16 @@ const font2 = localFont({
 })
 
 export const Profile = () => {
-    let username = localStorage.getItem("username");
-    if (username == null) {
-        username = "Spieler";
-    }
+    const [username, setUsername] = useState<string | null>(null);
+
+    useEffect(() => {
+        localStorage.getItem("username");
+        if (username == null) {
+            setUsername("Spieler");
+        } else {
+            setUsername(username);
+        }
+    }, []);
 
     return (
         <div className="pl-2 flex pb-2">

@@ -20,6 +20,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { set } from "react-hook-form";
 import { Tienne } from "next/font/google";
 import { time } from "console";
+import { GameActionModel } from "@/model/GameActionModel";
 
 /*
  * GameContextProps
@@ -29,9 +30,12 @@ import { time } from "console";
 interface GameContextProps {
 	fen: string;
 	setFen: React.Dispatch<React.SetStateAction<string>>;
+	setResign: React.Dispatch<React.SetStateAction<boolean>>;
+	resign: boolean;
 	moves: MoveInfo[];
 	getLastMove(): MoveInfo | null;
 	execute(move: string): void;
+	sendAction(gameActionModel: GameActionModel): void;
 	moveHistory: Array<Map<Date, MoveInfo>>;
 	isWhiteTimerRunning: boolean;
 	isBlackTimerRunning: boolean;
@@ -39,6 +43,7 @@ interface GameContextProps {
 	blackPlayerId: string;
 	whiteTimeLeft: number;
 	blackTimeLeft: number;
+	gameID?: string;
 }
 
 /*
@@ -50,10 +55,13 @@ interface GameContextProps {
 export const GameContext = createContext<GameContextProps>({
 	fen: "",
 	setFen: () => { },
+	setResign: () => { },
+	resign: false,
 	moves: [],
 	// getLastMove: (): MoveInfo | null => {},
 	getLastMove: () => { return null },
 	execute: (move: string) => { },
+	sendAction: (gameActionModel: GameActionModel) => { },
 	moveHistory: [],
 	isWhiteTimerRunning: false,
 	isBlackTimerRunning: false,
@@ -86,6 +94,8 @@ export function GameProvider({ children }: PropsWithChildren) {
 
 	const [moveHistory, setMoveHistory] = useState<Array<Map<Date, MoveInfo>>>([]);
 
+	const [activeColor, setActiveColor] = useState(0);
+
 	const [isWhiteTimerRunning, setIsWhiteTimerRunning] = useState(false);
 	const [isBlackTimerRunning, setIsBlackTimerRunning] = useState(false);
 
@@ -94,6 +104,8 @@ export function GameProvider({ children }: PropsWithChildren) {
 
 	const [whitePlayerId, setWhitePlayerId] = useState("");
 	const [blackPlayerId, setBlackPlayerId] = useState("");
+
+	const [resign, setResign] = useState(false);
 
 	const startWhiteTimer = () => {
 		setIsWhiteTimerRunning(true);
@@ -150,7 +162,7 @@ export function GameProvider({ children }: PropsWithChildren) {
 				  console.log("Game ", data);
 				  setWhiteTimeLeft(data.chessClock.whiteTimeLeft);
 				  setBlackTimeLeft(data.chessClock.blackTimeLeft);
-				  data.game.activeColor == 0 ? setIsWhiteTimerRunning(true) : setIsBlackTimerRunning(true);
+				  setActiveColor(data.game.activeColor);
 				  if(data.game.lastMoveFen != null){
 					await timeout(300);
 					setFen(data.game.lastMoveFen);
@@ -169,6 +181,11 @@ export function GameProvider({ children }: PropsWithChildren) {
 	
 		fetchGame();
 	  }, []);
+
+	  useEffect(() => {
+		activeColor	== 0 ? setIsWhiteTimerRunning(true) : setIsBlackTimerRunning(true);
+
+	  }, [whiteTimeLeft, activeColor]);
 
 	  useEffect(() => {
 		console.log("Aktualisierter FEN: ", fen);
@@ -204,6 +221,27 @@ export function GameProvider({ children }: PropsWithChildren) {
 	 * Wenn stompClient nicht null ist, wird der Client aktiviert und die
 	 * onConnect- und onDisconnect-Handler gesetzt.
 	 */
+
+	useEffect(() => {
+		if (stompInit && isConnected && stompClient){
+			const actionSubscription = stompClient.subscribe('/topic/game/action/', (message) => {
+				console.log("[SUB::Action] Received message:")
+				var content: GameActionModel = JSON.parse(message.body);
+				console.log("[SUB::Action] Received message:", content);
+				if(content.action == "resign"){
+					setResign(true);
+					
+				}
+			});
+			return () => {
+				// Kündigen Sie das Abonnement nur, wenn subscription existiert
+				if (actionSubscription) {
+					actionSubscription.unsubscribe();
+				}
+			};
+		}
+
+	}, [stompInit]);
 
 	useEffect(() => {
 		if (stompInit && isConnected && stompClient) {
@@ -346,6 +384,13 @@ const execute = (move: string) => {
 	}) */
 }
 
+function sendAction(gameActionModel: GameActionModel) {
+	console.log("sendAction", gameActionModel);
+	if (isConnected) {
+		stompClient?.publish({ destination: "/game/action", body: JSON.stringify(gameActionModel) });
+	}
+}
+
 /*
  * sendAwaitResponse
  * 
@@ -415,11 +460,14 @@ return (
 	<GameContext.Provider value={{
 		fen: fen,
 		setFen: setFen,
+		setResign: setResign,
+		resign: resign,
 		moves: moves,
 		// stompClient: stompClient, 
 		// setStompClient: setStompClient, 
 		getLastMove: getLastMove,
 		execute: execute,
+		sendAction: sendAction,
 		moveHistory: moveHistory,
 		isWhiteTimerRunning: isWhiteTimerRunning,
 		isBlackTimerRunning: isBlackTimerRunning,
@@ -427,6 +475,7 @@ return (
 		blackPlayerId: blackPlayerId,
 		whiteTimeLeft: whiteTimeLeft,
 		blackTimeLeft: blackTimeLeft,
+		gameID: gameID
 	}}>
 		{children}
 	</GameContext.Provider>
