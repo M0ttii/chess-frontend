@@ -1,9 +1,9 @@
 import { useGame } from "@/app/gameCtx"
 import * as React from 'react';
 import { Chessboard } from "react-chessboard";
-import ScenarioLoader from "../ScenarioLoader";
-import MoveDetails from "../MoveDetails";
-import Feed from "../Feed";
+import ScenarioLoader from "./ScenarioLoader";
+import MoveDetails from "./MoveDetails";
+import Feed from "./Feed";
 import { PromotionPieceOption } from "react-chessboard/dist/chessboard/types";
 import { Separator } from "../ui/separator";
 import localFont from 'next/font/local'

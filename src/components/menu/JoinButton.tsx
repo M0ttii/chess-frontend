@@ -1,14 +1,14 @@
 
 import React, { useState } from "react";
-import { Button } from "./ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { Input } from "./ui/input";
-import { Form } from "./ui/form";
+import { Button } from "../ui/button";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Input } from "../ui/input";
+import { Form } from "../ui/form";
 import { useForm } from "react-hook-form";
 import { SymbolIcon } from "@radix-ui/react-icons";
-import { useToast } from "./ui/use-toast";
+import { useToast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
-import AbstractButton from "./AbstractButton";
+import AbstractButton from "../AbstractButton";
 import { JoinIcon } from "@/assets/icons";
 
 
