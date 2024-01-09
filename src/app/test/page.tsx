@@ -11,18 +11,20 @@ export default function Home() {
 	return (
 		<>
 			{/* <UserDialog open={open} setOpen={setOpen}></UserDialog> */}
-			<div className={cn("h-full flex items-center justify-center" + styles.rdgradient)}>
-				<div className="flex flex-col w-full items-center justify-center">
-					<div className="mb-4 right-0">
-						<Label className='text-4xl text-[#E9E9E9] font-semibold'></Label>
-					</div>
-					<div className="flex space-x-20 items-center justify-center">
-						<CreateButton />
-						<JoinButton />
-						<DebugButton></DebugButton>
+			<div className={cn("h-screen flex items-center justify-center " + styles.rdgradient)}>
+				<div className="flex flex-col w-full">
+					<div className="section mx-auto w-[1180px] space-y-4 ">
+						<div className="">
+							<Label className='text-[64px] text-[#ffffff] opacity-80 font-semibold '>Play</Label>
+						</div>
+						<div className="flex space-x-20 items-center justify-center">
+							<CreateButton />
+							<JoinButton />
+							<DebugButton></DebugButton>
+						</div>
 					</div>
 				</div>
-					
+
 			</div>
 		</>
 	)

@@ -15,6 +15,38 @@
   }
 
   .rdgradient {
-    background: radial-gradient(50% 50% at 50% 50%, rgb(15.59, 14.35, 29.84) 0%, rgb(11.07, 10.9, 13.04) 100%);
+    background: radial-gradient(50% 50% at 50% 50%, rgb(25, 21, 47) 0%, rgb(11.07, 10.9, 13.04) 100%);
     background-color: rgba(255, 255, 255, 1);
   }
+
+  /*
+  Based on TailwindCSS recommendations,
+  consider using classes instead of the `@apply` directive
+  @see https://tailwindcss.com/docs/reusing-styles#avoiding-premature-abstraction
+*/
+.btn {
+  cursor: pointer;
+  outline: none;
+}
+
+.svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  fill: none;
+  stroke: #fff;
+  stroke-dasharray: 150 480;
+  stroke-dashoffset: 150;
+  transition: 1s ease-in-out;
+}
+
+
+.btn:hover svg {
+  stroke-dashoffset: -480;
+}
+
+.btn span {
+  color: white;
+  font-size: 18px;
+  font-weight: 100;
+}

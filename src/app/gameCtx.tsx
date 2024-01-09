@@ -44,6 +44,8 @@ interface GameContextProps {
 	whiteTimeLeft: number;
 	blackTimeLeft: number;
 	gameID?: string;
+	whitePlayerName: string;
+	blackPlayerName: string;
 }
 
 /*
@@ -68,7 +70,9 @@ export const GameContext = createContext<GameContextProps>({
 	whitePlayerId: "",
 	blackPlayerId: "",
 	whiteTimeLeft: 300000,
-	blackTimeLeft: 300000
+	blackTimeLeft: 300000,
+	whitePlayerName: "",
+	blackPlayerName: ""
 
 });
 
@@ -104,6 +108,9 @@ export function GameProvider({ children }: PropsWithChildren) {
 
 	const [whitePlayerId, setWhitePlayerId] = useState("");
 	const [blackPlayerId, setBlackPlayerId] = useState("");
+
+	const [whitePlayerName, setWhitePlayerName] = useState("");
+	const [blackPlayerName, setBlackPlayerName] = useState("");
 
 	const [resign, setResign] = useState(false);
 
@@ -163,8 +170,10 @@ export function GameProvider({ children }: PropsWithChildren) {
 				  setWhiteTimeLeft(data.chessClock.whiteTimeLeft);
 				  setBlackTimeLeft(data.chessClock.blackTimeLeft);
 				  setActiveColor(data.game.activeColor);
+				  setWhitePlayerName(data.whitePlayerName);
+				  setBlackPlayerName(data.blackPlayerName);
 				  if(data.game.lastMoveFen != null){
-					await timeout(300);
+					await timeout(400);
 					setFen(data.game.lastMoveFen);
 				  }
 				  console.log("blackPlayerId: " + data.blackPlayerId);
@@ -183,9 +192,9 @@ export function GameProvider({ children }: PropsWithChildren) {
 	  }, []);
 
 	  useEffect(() => {
-		activeColor	== 0 ? setIsWhiteTimerRunning(true) : setIsBlackTimerRunning(true);
+		activeColor	== 0 ? (setIsWhiteTimerRunning(true)) : (setIsBlackTimerRunning(true));
 
-	  }, [whiteTimeLeft, activeColor]);
+	  }, [activeColor]);
 
 	  useEffect(() => {
 		console.log("Aktualisierter FEN: ", fen);
@@ -475,6 +484,8 @@ return (
 		blackPlayerId: blackPlayerId,
 		whiteTimeLeft: whiteTimeLeft,
 		blackTimeLeft: blackTimeLeft,
+		whitePlayerName: whitePlayerName,
+		blackPlayerName: blackPlayerName,
 		gameID: gameID
 	}}>
 		{children}

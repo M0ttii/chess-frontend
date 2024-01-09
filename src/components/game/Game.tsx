@@ -21,7 +21,7 @@ const myFont = localFont({
 })
 
 const Game = () => {
-    const { fen, execute, resign, setResign, isBlackTimerRunning, isWhiteTimerRunning, moveHistory, whitePlayerId, whiteTimeLeft, blackTimeLeft} = useGame();
+    const { fen, execute, resign, setResign, isBlackTimerRunning, isWhiteTimerRunning, moveHistory, whitePlayerId, whiteTimeLeft, blackTimeLeft, whitePlayerName, blackPlayerName} = useGame();
     const router = useRouter();
     
     const [playerID, setPlayerID] = useState<string | null>(null);
@@ -71,6 +71,19 @@ const Game = () => {
         return playerID === whitePlayerId ? 'white' : 'black';
     };
 
+    const getPlayerNameOrientation = (invert = false) => {
+        if(invert) {
+            return playerID === whitePlayerId ? blackPlayerName.toString() : whitePlayerName.toString();
+        }
+        return playerID === whitePlayerId ? whitePlayerName.toString() : blackPlayerName.toString();
+    }
+
+    React.useEffect (() => {
+        console.log("FEN CHANGED: " + fen);
+    }, [fen]);
+
+    
+
     const isPlayerWhite = getBoardOrientation() === "white";
 
     return (
@@ -80,7 +93,7 @@ const Game = () => {
                 <div className="flex space-x-5">
                     <div className="flex flex-col items-start">
                         <div className="flex w-full justify-between">
-                            <PlayerName />
+                            <PlayerName name={getPlayerNameOrientation()}/>
                             <Time initialTime={300000} isRunning={isPlayerWhite ? isBlackTimerRunning : isWhiteTimerRunning} currentTime={isPlayerWhite ? blackTimeLeft : whiteTimeLeft} ></Time>
                         </div>
                         <div className="flex space-x-5">
@@ -90,7 +103,7 @@ const Game = () => {
                             </div>
                         </div>
                         <div className="flex w-full justify-between pt-3">
-                            <PlayerName />
+                            <PlayerName name={getPlayerNameOrientation(true)}/>
                             <Time initialTime={300000} isRunning={isPlayerWhite ? isWhiteTimerRunning : isBlackTimerRunning} currentTime={isPlayerWhite ? whiteTimeLeft : blackTimeLeft}></Time>
                         </div>
                     </div>

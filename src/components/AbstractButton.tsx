@@ -8,6 +8,7 @@ import { Label } from "@radix-ui/react-label";
 import localFont from "next/font/local";
 import { Separator } from "./ui/separator";
 import { Inter } from "next/font/google";
+import { KingComponent } from "@/assets/icons";
 
 const myFont = localFont({
 	src: '../fonts/Supreme-Variable.ttf',
@@ -30,44 +31,45 @@ const AbstractButton = ({ content, onClick, children, title, type }: AbstractBut
 	const isFreeMode = title == "Free Mode" ? true : false;
 	if (isDefault) {
 		return (
-			<div className="relative group">
-				<div className="rounded-lg [background:linear-gradient(90deg,_rgba(79,_56,_218,_0.43),_rgba(94,_18,_191,_0.54))] shadow-[0px_5px_21.9px_rgba(0,_0,_0,_0.25)] w-[340px] h-[220px]">
+			<button onClick={onClick} className="relative group text-left">
+				<div className={cn("rounded-lg [background:linear-gradient(90deg,_rgba(79,_56,_218,_0.43),_rgba(94,_18,_191,_0.54))] shadow-[0px_5px_21.9px_rgba(0,_0,_0,_0.25)] w-[340px] h-[220px] hover:scale-110 transition-transform duration-300 ease-in-out hover:cursor-pointer")}>
 					<div className="flex h-full items-center justify-center">
 						<div className="flex  h-full w-full items-center justify-start pl-5">
-							{isFreeMode 
-							? 
-							<div className="flex flex-col w-40 text-wrap">
-								<Label className={cn(myFont.className, " text-4xl fg-opacity-10")}>{title}</Label>
-								<Separator className="bg-white bg-opacity-30 w-40 rounded my-2 "></Separator>
-								<div className="w-52">
+							{isFreeMode
+								?
+								<div className="flex flex-col w-40 text-wrap">
+									<Label className={cn(myFont.className, " text-4xl fg-opacity-10")}>{title}</Label>
+									<Separator className="bg-white bg-opacity-30 w-40 rounded my-2 "></Separator>
+									<div className="w-52">
 
-									<Label className={cn(interFont.className, " text-sm opacity-80")}>Create a new Lobby and share your Game Code</Label>
+										<Label className={cn(interFont.className, " text-sm opacity-80")}>{content}</Label>
+									</div>
 								</div>
-							</div>
-							:
-							<div className="flex flex-col w-52 text-wrap">
-								<Label className={cn(myFont.className, " text-4xl fg-opacity-10")}>{title}</Label>
-								<Separator className="bg-white bg-opacity-30 w-40 rounded my-2 "></Separator>
-								<div className="w-52">
+								:
+								<div className="flex flex-col w-52 text-wrap">
+									<Label className={cn(myFont.className, " text-4xl fg-opacity-10")}>{title}</Label>
+									<Separator className="bg-white bg-opacity-30 w-40 rounded my-2 "></Separator>
+									<div className="w-52">
 
-									<Label className={cn(interFont.className, " text-sm opacity-80")}>Create a new Lobby and share your Game Code</Label>
+										<Label className={cn(interFont.className, " text-sm opacity-80")}>{content}</Label>
+									</div>
 								</div>
-							</div>
 							}
 
 						</div>
-						<div className="absolute top-[-115px] scale-[0.6] translate-x-32">
-							<Image className="" src="/king.png" width={600} height={600} alt="s" />
+						<div className="absolute top-[-50px] translate-x-32">
+							<KingComponent className={cn("w-64 h-64")}></KingComponent>
+							{/* <Image className="" src="/king.svg" width={600} height={600} alt="s" /> */}
 						</div>
 					</div>
 				</div>
 
-			</div>
+			</button>
 		);
 	}
 	return (
-		<div className="relative group">
-			<div className="rounded-lg [background:linear-gradient(90deg,_rgba(56,_218,_150,_0.43),_rgba(18,_191,_149,_0.54))] shadow-[0px_5px_21.9px_rgba(0,_0,_0,_0.25)] w-[340px] h-[220px]">
+		<button onClick={onClick} className="relative group text-left">
+			<div className={cn("rounded-lg [background:linear-gradient(90deg,_rgba(56,_218,_150,_0.43),_rgba(18,_191,_149,_0.54))] shadow-[0px_5px_21.9px_rgba(0,_0,_0,_0.25)] w-[340px] h-[220px] hover:scale-110 transition-transform duration-300 ease-in-out hover:cursor-pointer")}>
 				<div className="flex h-full items-center justify-center">
 					<div className="flex  h-full w-full items-center justify-start pl-5">
 						<div className="flex flex-col w-40 text-wrap">
@@ -75,18 +77,18 @@ const AbstractButton = ({ content, onClick, children, title, type }: AbstractBut
 							<Separator className="bg-white bg-opacity-30 w-40 rounded my-2 "></Separator>
 							<div className="w-52">
 
-								<Label className={cn(interFont.className, " text-sm opacity-80")}>Create a new Lobby and share your Game Code</Label>
+								<Label className={cn(interFont.className, " text-sm opacity-80")}>{content}</Label>
 							</div>
 						</div>
-						
+
 					</div>
 					<div className="absolute top-[-140px] scale-[0.6] translate-x-32">
-							<Image className="" src="/king-green.png" width={800} height={800} alt="s" />
-						</div>
+						<Image className="" src="/king-green.png" width={800} height={800} alt="s" />
+					</div>
 				</div>
 			</div>
 
-		</div>
+		</button>
 
 		// <div className="relative group">
 		// 	<div className="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
