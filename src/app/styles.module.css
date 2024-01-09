@@ -13,3 +13,8 @@
     z-index: -1;
     border-radius: inherit;
   }
+
+  .rdgradient {
+    background: radial-gradient(50% 50% at 50% 50%, rgb(15.59, 14.35, 29.84) 0%, rgb(11.07, 10.9, 13.04) 100%);
+    background-color: rgba(255, 255, 255, 1);
+  }

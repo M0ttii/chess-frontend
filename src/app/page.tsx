@@ -11,6 +11,8 @@ import { SymbolIcon } from '@radix-ui/react-icons'
 import { UUID } from 'crypto'
 import React, { useEffect } from 'react'
 import { Profile } from '@/components/menu/Profile'
+import styles from './styles.module.css'
+import { cn } from '@/lib/utils'
 
 export default function Home() {
 	const [isLoading, setIsLoading] = React.useState<boolean>(false)
@@ -68,33 +70,21 @@ export default function Home() {
 	)
 
 	return (
-		<div className="">
-			<UserDialog open={open} setOpen={setOpen}></UserDialog>
-			<div className="flex flex-col h-screen bg-[#121318]">
-				<div className="section mx-auto w-[700px]">
-					<div className="pt-5 pb-36 flex justify-between items-center">
-						<div className="flex flex-row items-center">
-							<WhiteKingIcon className="h-10 w-10 text-white" />
-							<Label className="text-4xl font-semibold ml-2">Chess</Label>
-						</div>
-						<Profile></Profile>
-					</div>
-					<div className="mb-4">
+		<>
+			{/* <UserDialog open={open} setOpen={setOpen}></UserDialog> */}
+			<div className={cn("h-full flex items-center justify-center" + styles.rdgradient)}>
+				<div className="flex flex-col w-full items-center justify-center space-x-5">
+					<div className="mb-4 right-0">
 						<Label className='text-4xl text-[#E9E9E9] font-semibold'>Play</Label>
 					</div>
-					<div className="flex space-x-8 items-center  justify-start">
+					<div className="flex space-x-8 items-center justify-center">
 						<CreateButton />
 						<JoinButton />
 						<DebugButton></DebugButton>
 					</div>
-					<div className="mb-4 mt-8">
-						<Label className='text-4xl text-[#E9E9E9] font-semibold'>Completed Games</Label>
-					</div>
-					<div className="mt-2">
-						<MenuHistory></MenuHistory>
-					</div>
 				</div>
+					
 			</div>
-		</div>
+		</>
 	)
 }
