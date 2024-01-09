@@ -10,10 +10,10 @@ import { useToast } from '@/components/ui/use-toast'
 import { SymbolIcon } from '@radix-ui/react-icons'
 import { UUID } from 'crypto'
 import React, { useEffect } from 'react'
+import { Profile } from '@/components/menu/Profile'
 
 export default function Home() {
 	const [isLoading, setIsLoading] = React.useState<boolean>(false)
-	const [isConnected, setIsConnected] = React.useState<boolean>(false)
 	const [user, setUser] = React.useState<boolean>(false)
 	const [open, setOpen] = React.useState<boolean>(false);
 	const { toast } = useToast();
@@ -23,27 +23,21 @@ export default function Home() {
 	useEffect(() => {
 		async function checkUser() {
 			const userID = localStorage.getItem("id");
-			var sentError = false;
-
 			if (userID) {
 				try {
-
-					const res = await fetch('http://localhost:8080/user/' + userID)
+					const res = await fetch('http://localhost:8080/user/' + userID);
 					if (res.ok) {
-						const data = await res.json();
-						console.log("User exists: " + data);
-						setIsConnected(true);
+						console.log("User exists");
 					} else {
-						console.log("User not found")
+						console.log("User not found");
 						localStorage.removeItem("id");
 						setOpen(true);
-						setIsConnected(true);
 					}
 				} catch (error) {
 					toast({
 						variant: "destructive",
 						description: "Can't connect to server"
-					})
+					});
 				}
 			} else {
 				setOpen(true);
@@ -51,7 +45,7 @@ export default function Home() {
 		}
 
 		checkUser();
-	}, [toast])
+	}, [toast]);
 
 	function create() {
 		setIsLoading(true);
@@ -76,21 +70,24 @@ export default function Home() {
 	return (
 		<div className="">
 			<UserDialog open={open} setOpen={setOpen}></UserDialog>
-			<div className="flex flex-col h-screen bg-[#0B0C0F]">
+			<div className="flex flex-col h-screen bg-[#121318]">
 				<div className="section mx-auto w-[700px]">
-					<div className="pt-5 pb-36 flex flex-row items-center">
-						<WhiteKingIcon className="h-10 w-10 text-white" />
-						<Label className="text-4xl font-semibold ml-2">Chess</Label>
+					<div className="pt-5 pb-36 flex justify-between items-center">
+						<div className="flex flex-row items-center">
+							<WhiteKingIcon className="h-10 w-10 text-white" />
+							<Label className="text-4xl font-semibold ml-2">Chess</Label>
+						</div>
+						<Profile></Profile>
 					</div>
-					<div className="mb-10">
+					<div className="mb-4">
 						<Label className='text-4xl text-[#E9E9E9] font-semibold'>Play</Label>
 					</div>
-					<div className="flex space-x-8 items-center  justify-between">
+					<div className="flex space-x-8 items-center  justify-start">
 						<CreateButton />
 						<JoinButton />
 						<DebugButton></DebugButton>
 					</div>
-					<div className="mb-10 mt-8">
+					<div className="mb-4 mt-8">
 						<Label className='text-4xl text-[#E9E9E9] font-semibold'>Completed Games</Label>
 					</div>
 					<div className="mt-2">

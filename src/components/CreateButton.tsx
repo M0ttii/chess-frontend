@@ -15,41 +15,25 @@ import { AddIcon } from "@/assets/icons";
 
 
 export function CreateButton() {
-	const { stompClient } = useStomp();
+	const { stompClient, isConnected } = useStomp();
 	const [isLoading, setIsLoading] = React.useState<boolean>(false)
 	const [game, setGame] = useState('');
 	const router = useRouter()
 	const [open, setOpen] = useState(false);
-	const [stompConnected, setStompConnected] = useState(false);
 	const form = useForm()
 	const { toast } = useToast()
 
 	useEffect(() => {
-		if (stompClient) {
-			if (!stompClient.active) {
-				stompClient.activate();
-			}
-
-			const onConnect = () => {
-				console.log("STOMP: connected");
-				setStompConnected(true);
-			};
-
-			const onDisconnect = () => {
-				console.log('STOMP: disconnected');
-				setStompConnected(false)
-			};
-
-			if (stompClient) {
-				stompClient.onConnect = onConnect;
-				stompClient.onDisconnect = onDisconnect;
-			}
-
+		if (isConnected) {
+			console.log("STOMP: connected");
+		} else {
+			console.log("stompClient is null or disconnected");
 		}
-	}, [stompClient]);
+	}, [isConnected]);
 
 	async function createLobby(state: boolean) {
 		console.log(state)
+		console.log("StompConnected: " + isConnected)
 		if (state) {
 			if (game != '') {
 				try {
@@ -77,10 +61,11 @@ export function CreateButton() {
 			console.log("Lobby ID " + data.id);
 			console.log("Game: " + game)
 
-			if (stompConnected && stompClient) {
+			if (isConnected && stompClient) {
 				stompClient.subscribe('/topic/lobby/' + data.id, message => {
 					console.log("Second player joined")
 					router.push('/game/' + data.id)
+
 				})
 			}
 			//stompClient.publish({destination: '/app/test', body: JSON.stringify({'id': '123'})})
