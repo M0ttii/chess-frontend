@@ -79,7 +79,7 @@ export function CreateButton() {
 	return (
 		<Dialog onOpenChange={createLobby}>
 			<DialogTrigger asChild>
-				<AbstractButton content={"Create Game"}>
+				<AbstractButton title="Create New Course" type="blue" content={"Create Game"}>
 					<AddIcon className="h-4 w-4"></AddIcon>
 				</AbstractButton>
 			</DialogTrigger>

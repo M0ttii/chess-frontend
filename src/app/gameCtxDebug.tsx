@@ -60,12 +60,12 @@ export function useGame() {
  */
 export function GameProvider({ children }: PropsWithChildren) { 
 	const [val, setVal] = useState("");
-	const [stompConnected, setStompConnected] = useState(false);
 	const eventHandlers: any = useRef({}).current;
 	const [fen, setFen] = useState("");
 	const [moves, setMoves] = useState<MoveInfo[]>([]);
 	const [promoteTo, setPromoteTo] = useState(-1);
-	const { stompClient } = useStomp();
+	const { stompClient, isConnected } = useStomp();
+	const [stompInit, setStompInit] = useState(false);
 
 	/*
 	 * useEffect
@@ -76,35 +76,13 @@ export function GameProvider({ children }: PropsWithChildren) {
 	 * onConnect- und onDisconnect-Handler gesetzt.
 	 */
 	useEffect(() => {
-		if (stompClient) {
-            if (!stompClient.active) {
-                stompClient.activate();
-            }
-
-            const onConnect = () => {
-                console.log("STOMP: connected");
-				setStompConnected(true);
-            };
-
-            const onDisconnect = () => {
-                console.log('STOMP: disconnected');
-				setStompConnected(false)
-            };
-
-            if (stompClient) {
-                stompClient.onConnect = onConnect;
-                stompClient.onDisconnect = onDisconnect;
-            }
-
-            // return () => {
-            //     // Deaktivieren Sie stompClient nur, wenn es nicht null ist
-            //     if (stompClient) {
-            //         stompClient.deactivate();
-            //     }
-            // };
-        
+		if (isConnected) {
+			console.log("STOMP: connected");
+			setStompInit(true);
+		} else {
+			console.log("stompClient is null or disconnected");
 		}
-	}, [stompClient]);
+	}, [isConnected]);
 
 
 	/*
@@ -117,7 +95,7 @@ export function GameProvider({ children }: PropsWithChildren) {
 	 */
 
 	useEffect(() => {
-        if (stompConnected && stompClient) {
+        if (stompInit && stompClient && isConnected) {
             const subscription = stompClient.subscribe('/topic/debug/move/', message => {
                 var content = JSON.parse(message.body);
                 console.log("[SUB::Move] Received message:", content);
@@ -162,7 +140,7 @@ export function GameProvider({ children }: PropsWithChildren) {
             };
         }
 		console.log("use effect handling subscriptions");
-    }, [stompConnected, stompClient]);
+    }, [stompInit]);
 
 	const createGame = () => {
 		console.log("provider: create game");
@@ -176,7 +154,7 @@ export function GameProvider({ children }: PropsWithChildren) {
 	 */
 	async function startGame(fen: string) {
 		console.log("provider: start game");
-		if (stompClient && stompConnected) {
+		if (stompClient && stompInit) {
 			var message: DebugModel = {
                 fen: fen
             }
@@ -191,7 +169,7 @@ export function GameProvider({ children }: PropsWithChildren) {
 	 */
 	const load = (fen: string) => {
 		console.log("game: loading with", fen);
-		if (stompClient && stompConnected) {
+		if (stompClient && stompInit) {
 			var message: DebugModel = {
                 fen: fen
             }
@@ -279,7 +257,7 @@ export function GameProvider({ children }: PropsWithChildren) {
 				const moveInfo: MoveInfo = response.moveInfo;
 					resolve(moveInfo);
             };
-			if (stompConnected) {
+			if (stompClient && stompInit) {
                 stompClient?.publish({ destination: destination, body: JSON.stringify(message) });
             }
 			setTimeout(() => {

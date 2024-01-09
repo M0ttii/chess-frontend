@@ -79,7 +79,7 @@ export function JoinButton() {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <AbstractButton content="Join Game">
+                <AbstractButton title="Join Course" type="green" content="Join Game">
                     <JoinIcon />
                 </AbstractButton>
             </DialogTrigger>
