@@ -5,7 +5,7 @@ const Feed = () => {
 	const { moves } = useGame();
 
 	return (
-		<div className="w-full max-h-[340px] overflow-y-scroll">
+		<div className="w-full h-[340px] max-h-[340px] overflow-y-scroll">
 			<h1 className="text-xl">History</h1>
 			<ol className="overflow-y-scroll overflow-hidden space-y-0.5 border-s border-gray-700 ml-2 mt-2">
 			{

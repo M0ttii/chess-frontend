@@ -51,7 +51,7 @@ const DebugGame = () => {
 							</div>
 							<ScenarioLoader onSelection={onSelection} />
 							<Separator className="my-3 bg-white/30 rounded" />
-							<MoveDetails info={moveInfo}></MoveDetails>
+							<MoveDetails info={getLastMove()}></MoveDetails>
 							<Feed />
 						</div>
 					</div>
