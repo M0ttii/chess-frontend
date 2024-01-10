@@ -20,7 +20,7 @@ export default function Home() {
     }
 
     return (
-      <div className="bg-[#111115]">
+      <div className="h-full flex  items-center justify-center bg-[#121318]">
         <GameProvider>
           <DebugGame></DebugGame>
         </GameProvider>

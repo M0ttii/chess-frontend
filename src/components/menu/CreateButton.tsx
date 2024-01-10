@@ -1,15 +1,15 @@
 
 import React, { useContext, useEffect, useState } from "react";
-import { Button } from "./ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { Input } from "./ui/input";
-import { Form } from "./ui/form";
+import { Button } from "../ui/button";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Input } from "../ui/input";
+import { Form } from "../ui/form";
 import { useForm } from "react-hook-form";
 import { CopyIcon, SymbolIcon } from "@radix-ui/react-icons";
-import { useToast } from "./ui/use-toast";
+import { useToast } from "../ui/use-toast";
 import { useStomp } from "@/ws/StompClientContext";
 import { useRouter } from "next/navigation";
-import AbstractButton from "./AbstractButton";
+import AbstractButton from "../AbstractButton";
 import createIcon from "../../public/add-circle.svg";
 import { AddIcon } from "@/assets/icons";
 
@@ -79,7 +79,7 @@ export function CreateButton() {
 	return (
 		<Dialog onOpenChange={createLobby}>
 			<DialogTrigger asChild>
-				<AbstractButton content={"Create Game"}>
+				<AbstractButton title="Create New Game" type="blue" content={"Create a lobby and share your game code"}>
 					<AddIcon className="h-4 w-4"></AddIcon>
 				</AbstractButton>
 			</DialogTrigger>

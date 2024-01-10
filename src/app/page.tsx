@@ -1,9 +1,9 @@
 'use client'
-import { CreateButton } from '@/components/CreateButton'
-import { DebugButton } from '@/components/DebugButton'
+import { CreateButton } from '@/components/menu/CreateButton'
+import { DebugButton } from '@/components/menu/DebugButton'
 import { MenuHistory } from '@/components/MenuHistory'
-import { JoinButton } from '@/components/JoinButton'
-import UserDialog from '@/components/UserDialog'
+import { JoinButton } from '@/components/menu/JoinButton'
+import UserDialog from '@/components/menu/UserDialog'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
@@ -11,6 +11,8 @@ import { SymbolIcon } from '@radix-ui/react-icons'
 import { UUID } from 'crypto'
 import React, { useEffect } from 'react'
 import { Profile } from '@/components/menu/Profile'
+import styles from './styles.module.css'
+import { cn } from '@/lib/utils'
 
 export default function Home() {
 	const [isLoading, setIsLoading] = React.useState<boolean>(false)
@@ -68,33 +70,23 @@ export default function Home() {
 	)
 
 	return (
-		<div className="">
+		<>
 			<UserDialog open={open} setOpen={setOpen}></UserDialog>
-			<div className="flex flex-col h-screen bg-[#121318]">
-				<div className="section mx-auto w-[700px]">
-					<div className="pt-5 pb-36 flex justify-between items-center">
-						<div className="flex flex-row items-center">
-							<WhiteKingIcon className="h-10 w-10 text-white" />
-							<Label className="text-4xl font-semibold ml-2">Chess</Label>
+			<div className={cn("h-screen flex items-center justify-center " + styles.rdgradient)}>
+				<div className="flex flex-col w-full">
+					<div className="section mx-auto w-[1180px] space-y-4 ">
+						<div className="">
+							<Label className='text-[64px] text-[#ffffff] opacity-80 font-semibold '>Play</Label>
 						</div>
-						<Profile></Profile>
-					</div>
-					<div className="mb-4">
-						<Label className='text-4xl text-[#E9E9E9] font-semibold'>Play</Label>
-					</div>
-					<div className="flex space-x-8 items-center  justify-start">
-						<CreateButton />
-						<JoinButton />
-						<DebugButton></DebugButton>
-					</div>
-					<div className="mb-4 mt-8">
-						<Label className='text-4xl text-[#E9E9E9] font-semibold'>Completed Games</Label>
-					</div>
-					<div className="mt-2">
-						<MenuHistory></MenuHistory>
+						<div className="flex space-x-20 items-center justify-center">
+							<CreateButton />
+							<JoinButton />
+							<DebugButton></DebugButton>
+						</div>
 					</div>
 				</div>
+
 			</div>
-		</div>
+		</>
 	)
 }

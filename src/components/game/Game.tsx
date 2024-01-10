@@ -1,9 +1,9 @@
 import { useGame } from "@/app/gameCtx"
 import * as React from 'react';
 import { Chessboard } from "react-chessboard";
-import ScenarioLoader from "../ScenarioLoader";
-import MoveDetails from "../MoveDetails";
-import Feed from "../Feed";
+import ScenarioLoader from "./ScenarioLoader";
+import MoveDetails from "./MoveDetails";
+import Feed from "./Feed";
 import { PromotionPieceOption } from "react-chessboard/dist/chessboard/types";
 import { Separator } from "../ui/separator";
 import localFont from 'next/font/local'
@@ -13,6 +13,7 @@ import { Time } from "./Time";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ResignDialog } from "./ResignDialog";
+import { CheckMateDialog } from "./CheckMateDialog";
 
 
 const myFont = localFont({
@@ -21,12 +22,20 @@ const myFont = localFont({
 })
 
 const Game = () => {
-    const { fen, execute, resign, setResign, isBlackTimerRunning, isWhiteTimerRunning, moveHistory, whitePlayerId, whiteTimeLeft, blackTimeLeft} = useGame();
+    const { fen, execute, resign, checkMate, setResign, whoResigns, isBlackTimerRunning, isWhiteTimerRunning, moveHistory, whitePlayerId, whiteTimeLeft, blackTimeLeft, whitePlayerName, blackPlayerName} = useGame();
     const router = useRouter();
     
     const [playerID, setPlayerID] = useState<string | null>(null);
 
     const [boardWidth, setBoardWidth] = useState(400);
+
+    const [checkOpen, setCheckOpen] = useState(false);
+
+    React.useEffect(() => {
+        if (checkMate) {
+            setCheckOpen(true);
+        }
+    }, [checkMate]);
 
     React.useEffect(() => {
         // Dieser Code wird nur im Browser ausgeführt, nicht beim Server-Side Rendering
@@ -41,6 +50,10 @@ const Game = () => {
         // add move history
         return true;
     } 
+
+    React.useEffect(() => {
+        console.log("useEffect whoResigns: " + whoResigns);
+    }, [whoResigns]);
 
      function test(piece: PromotionPieceOption | undefined): boolean {
         console.log(piece);
@@ -71,16 +84,30 @@ const Game = () => {
         return playerID === whitePlayerId ? 'white' : 'black';
     };
 
+    const getPlayerNameOrientation = (invert = false) => {
+        if(invert) {
+            return playerID === whitePlayerId ? blackPlayerName.toString() : whitePlayerName.toString();
+        }
+        return playerID === whitePlayerId ? whitePlayerName.toString() : blackPlayerName.toString();
+    }
+
+    React.useEffect (() => {
+        console.log("FEN CHANGED: " + fen);
+    }, [fen]);
+
+    
+
     const isPlayerWhite = getBoardOrientation() === "white";
 
     return (
         <>
-            <ResignDialog open={resign} setOpen={setResign}></ResignDialog>
+            <CheckMateDialog open={checkOpen} setOpen={setCheckOpen} whoWins={checkMate}></CheckMateDialog>
+            <ResignDialog open={resign} setOpen={setResign} whoResigns={whoResigns}></ResignDialog>
             <div className="flex justify-center items-center h-screen rounded-lg space-x-4">
                 <div className="flex space-x-5">
                     <div className="flex flex-col items-start">
                         <div className="flex w-full justify-between">
-                            <PlayerName />
+                            <PlayerName name={getPlayerNameOrientation()}/>
                             <Time initialTime={300000} isRunning={isPlayerWhite ? isBlackTimerRunning : isWhiteTimerRunning} currentTime={isPlayerWhite ? blackTimeLeft : whiteTimeLeft} ></Time>
                         </div>
                         <div className="flex space-x-5">
@@ -90,7 +117,7 @@ const Game = () => {
                             </div>
                         </div>
                         <div className="flex w-full justify-between pt-3">
-                            <PlayerName />
+                            <PlayerName name={getPlayerNameOrientation(true)}/>
                             <Time initialTime={300000} isRunning={isPlayerWhite ? isWhiteTimerRunning : isBlackTimerRunning} currentTime={isPlayerWhite ? whiteTimeLeft : blackTimeLeft}></Time>
                         </div>
                     </div>

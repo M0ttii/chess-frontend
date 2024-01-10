@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { Toaster } from '@/components/ui/toaster'
 import { StompClientProvider } from '@/ws/StompClientContext'
+import { cn } from '@/lib/utils'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,14 +19,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-          <div className="">
+      <body className={cn(inter.className + " h-screen")}>
             <StompClientProvider>
 
               {children}
               <Toaster></Toaster>
             </StompClientProvider>
-          </div>
         </body>
     </html>
   )

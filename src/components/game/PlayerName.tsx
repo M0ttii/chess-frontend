@@ -8,7 +8,11 @@ const myFont = localFont({
     weight: '500',
   })
 
-export const PlayerName = () => {
+interface PlayerNameProps {
+    name: string;
+}
+
+export const PlayerName = (props: PlayerNameProps) => {
     return (
         <div className="pl-2 flex pb-2">
             <div className="wtop-0 left-0">
@@ -16,7 +20,7 @@ export const PlayerName = () => {
 
                     <div className="pb  w-[46px] h-[46px] top-[11px] left-[8px] object-cover bg-red-400 rounded-[20px]"></div>
                     <div className={cn(myFont.className, " w-[77px] top-[11px] left-[60px] pl-2 font-bold text-white text-[18px] tracking-[0] leading-[normal] whitespace-nowrap")}>
-                        Theo
+                        {props.name}
                     </div>
                 </div>
 
