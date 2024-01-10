@@ -15,7 +15,7 @@ const UserDialog = ( {open, setOpen} : {open: any, setOpen: any} ) => {
       
         try {
           // Warten auf die Antwort des Fetch-Vorgangs.
-          const response = await fetch("http://localhost:8080/user", {
+          const response = await fetch(process.env.NEXT_PUBLIC_HOST + "/user", {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

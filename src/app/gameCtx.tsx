@@ -21,6 +21,7 @@ import { set } from "react-hook-form";
 import { Tienne } from "next/font/google";
 import { time } from "console";
 import { GameActionModel } from "@/model/GameActionModel";
+import { GameActionResponseModel } from "@/model/GameActionResponseModel";
 
 /*
  * GameContextProps
@@ -46,6 +47,8 @@ interface GameContextProps {
 	gameID?: string;
 	whitePlayerName: string;
 	blackPlayerName: string;
+	whoResigns: string;
+	checkMate: string;
 }
 
 /*
@@ -72,7 +75,9 @@ export const GameContext = createContext<GameContextProps>({
 	whiteTimeLeft: 300000,
 	blackTimeLeft: 300000,
 	whitePlayerName: "",
-	blackPlayerName: ""
+	blackPlayerName: "",
+	whoResigns: "",
+	checkMate: ""
 
 });
 
@@ -95,6 +100,7 @@ export function GameProvider({ children }: PropsWithChildren) {
 	const path = usePathname();
 	const gameID = path.split("/").pop();
 	const [stompInit, setStompInit] = useState(false);
+	const router = useRouter();
 
 	const [moveHistory, setMoveHistory] = useState<Array<Map<Date, MoveInfo>>>([]);
 
@@ -113,6 +119,9 @@ export function GameProvider({ children }: PropsWithChildren) {
 	const [blackPlayerName, setBlackPlayerName] = useState("");
 
 	const [resign, setResign] = useState(false);
+
+	const [whoResigns, setWhoResigns] = useState("");
+	const [checkMate, setCheckMate] = useState("");
 
 	const startWhiteTimer = () => {
 		setIsWhiteTimerRunning(true);
@@ -164,6 +173,10 @@ export function GameProvider({ children }: PropsWithChildren) {
 			  const data = await response.json();
 			  console.log("LastMoveFen: " + data.game.lastMoveFen);
 			  if(data != null){
+				if(data.over){
+					router.push("/");
+					return;
+				}
 				  setBlackPlayerId(data.blackPlayerId);
 				  setWhitePlayerId(data.whitePlayerId);
 				  console.log("Game ", data);
@@ -231,14 +244,18 @@ export function GameProvider({ children }: PropsWithChildren) {
 	 * onConnect- und onDisconnect-Handler gesetzt.
 	 */
 
+	
+
 	useEffect(() => {
 		if (stompInit && isConnected && stompClient){
 			const actionSubscription = stompClient.subscribe('/topic/game/action/', (message) => {
 				console.log("[SUB::Action] Received message:")
-				var content: GameActionModel = JSON.parse(message.body);
+				var content: GameActionResponseModel = JSON.parse(message.body);
 				console.log("[SUB::Action] Received message:", content);
 				if(content.action == "resign"){
+					setWhoResigns(content.whoResigns);
 					setResign(true);
+
 					
 				}
 			});
@@ -260,6 +277,10 @@ export function GameProvider({ children }: PropsWithChildren) {
 				console.log("[SUB::Move] Received message:", content);
 				const moveInfo: MoveInfo = content.moveInfo;
 				if (moveInfo.legal) {
+					if(moveInfo.gameState == "END_WHITE_IN_CHECKMATE" || moveInfo.gameState == "END_BLACK_IN_CHECKMATE"){
+						setCheckMate(moveInfo.gameState);
+						return;
+					}
 					setWhiteTimeLeft(content.whiteTimeLeft);
 					setBlackTimeLeft(content.blackTimeLeft);
 					addMove(new Date(), moveInfo);
@@ -486,7 +507,9 @@ return (
 		blackTimeLeft: blackTimeLeft,
 		whitePlayerName: whitePlayerName,
 		blackPlayerName: blackPlayerName,
-		gameID: gameID
+		gameID: gameID,
+		whoResigns: whoResigns,
+		checkMate: checkMate
 	}}>
 		{children}
 	</GameContext.Provider>

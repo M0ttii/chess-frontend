@@ -26,7 +26,7 @@ export function StompClientProvider({ children }: ScriptProps) {
 
     useEffect(() => {
         const client = new Client({
-            brokerURL: 'ws://localhost:8080/debug',
+            brokerURL: process.env.NEXT_PUBLIC_WS_HOST + '/debug',
             debug: function (str) {
                 console.log(str)
             },

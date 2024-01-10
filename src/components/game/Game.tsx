@@ -13,6 +13,7 @@ import { Time } from "./Time";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ResignDialog } from "./ResignDialog";
+import { CheckMateDialog } from "./CheckMateDialog";
 
 
 const myFont = localFont({
@@ -21,12 +22,20 @@ const myFont = localFont({
 })
 
 const Game = () => {
-    const { fen, execute, resign, setResign, isBlackTimerRunning, isWhiteTimerRunning, moveHistory, whitePlayerId, whiteTimeLeft, blackTimeLeft, whitePlayerName, blackPlayerName} = useGame();
+    const { fen, execute, resign, checkMate, setResign, whoResigns, isBlackTimerRunning, isWhiteTimerRunning, moveHistory, whitePlayerId, whiteTimeLeft, blackTimeLeft, whitePlayerName, blackPlayerName} = useGame();
     const router = useRouter();
     
     const [playerID, setPlayerID] = useState<string | null>(null);
 
     const [boardWidth, setBoardWidth] = useState(400);
+
+    const [checkOpen, setCheckOpen] = useState(false);
+
+    React.useEffect(() => {
+        if (checkMate) {
+            setCheckOpen(true);
+        }
+    }, [checkMate]);
 
     React.useEffect(() => {
         // Dieser Code wird nur im Browser ausgeführt, nicht beim Server-Side Rendering
@@ -41,6 +50,10 @@ const Game = () => {
         // add move history
         return true;
     } 
+
+    React.useEffect(() => {
+        console.log("useEffect whoResigns: " + whoResigns);
+    }, [whoResigns]);
 
      function test(piece: PromotionPieceOption | undefined): boolean {
         console.log(piece);
@@ -88,7 +101,8 @@ const Game = () => {
 
     return (
         <>
-            <ResignDialog open={resign} setOpen={setResign}></ResignDialog>
+            <CheckMateDialog open={checkOpen} setOpen={setCheckOpen} whoWins={checkMate}></CheckMateDialog>
+            <ResignDialog open={resign} setOpen={setResign} whoResigns={whoResigns}></ResignDialog>
             <div className="flex justify-center items-center h-screen rounded-lg space-x-4">
                 <div className="flex space-x-5">
                     <div className="flex flex-col items-start">
