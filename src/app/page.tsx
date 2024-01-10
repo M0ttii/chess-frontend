@@ -27,7 +27,7 @@ export default function Home() {
 			const userID = localStorage.getItem("id");
 			if (userID) {
 				try {
-					const res = await fetch('http://localhost:8080/user/' + userID);
+					const res = await fetch(process.env.NEXT_PUBLIC_HOST + '/user/' + userID);
 					if (res.ok) {
 						console.log("User exists");
 					} else {

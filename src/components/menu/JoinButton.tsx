@@ -35,7 +35,7 @@ export function JoinButton() {
         }
 
         setIsLoading(true);
-        const lobbyRes = await fetch("http://localhost:8080/lobby/" + game)
+        const lobbyRes = await fetch(process.env.NEXT_PUBLIC_HOST + "/lobby/" + game)
 
         if (!lobbyRes.ok) {
             toast({
@@ -49,7 +49,7 @@ export function JoinButton() {
         const lobbyResData = await lobbyRes.json();
         console.log("LobbyRedData: " + lobbyResData);
 
-        const gameCreateRes = await fetch("http://localhost:8080/game", {
+        const gameCreateRes = await fetch(process.env.NEXT_PUBLIC_HOST + "/game", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

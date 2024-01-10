@@ -6,7 +6,7 @@ import DebugGame from "@/components/GameDebug";
 export default function Home() {
 
     async function setupGame(){
-        const gameCreateRes = await fetch("http://localhost:8080/game", {
+        const gameCreateRes = await fetch(process.env.NEXT_PUBLIC_HOST + "/game", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

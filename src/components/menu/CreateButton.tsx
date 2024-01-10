@@ -38,7 +38,7 @@ export function CreateButton() {
 			if (game != '') {
 				try {
 					var gameToDelete = game;
-					const response = await fetch("http://localhost:8080/lobby/" + gameToDelete, {
+					const response = await fetch(process.env.NEXT_PUBLIC_HOST + "/lobby/" + gameToDelete, {
 						method: 'DELETE',
 						headers: {
 							'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ export function CreateButton() {
 					console.log(error);
 				}
 			}
-			const response = await fetch("http://localhost:8080/lobby", {
+			const response = await fetch(process.env.NEXT_PUBLIC_HOST + "/lobby", {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

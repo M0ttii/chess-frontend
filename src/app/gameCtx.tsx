@@ -168,7 +168,7 @@ export function GameProvider({ children }: PropsWithChildren) {
 	useEffect(() => {
 		const fetchGame = async () => {
 		  try {
-			const response = await fetch('http://localhost:8080/game/' + gameID); 
+			const response = await fetch(process.env.NEXT_PUBLIC_HOST + '/game/' + gameID); 
 			if (response.ok) {
 			  const data = await response.json();
 			  console.log("LastMoveFen: " + data.game.lastMoveFen);
@@ -217,7 +217,7 @@ export function GameProvider({ children }: PropsWithChildren) {
 	useEffect(() => {
 		const fetchMoveHistory = async () => {
 		  try {
-			const response = await fetch('http://localhost:8080/history/' + gameID); 
+			const response = await fetch(process.env.NEXT_PUBLIC_HOST + '/history/' + gameID); 
 			if (response.ok) {
 			  const data = await response.json();
 			  if(data.length > 5){
