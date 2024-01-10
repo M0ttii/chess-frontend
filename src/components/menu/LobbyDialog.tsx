@@ -10,9 +10,9 @@ import {
     AlertDialogTrigger,
   } from "@/components/ui/alert-dialog"
   import { Button } from "@/components/ui/button"
-import { Label } from "./ui/label"
-import { Input } from "./ui/input"
 import { CopyIcon } from "@radix-ui/react-icons"
+import { Label } from "../ui/label"
+import { Input } from "../ui/input"
   
   export function LobbyDialog() {
     return (
