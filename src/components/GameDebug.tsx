@@ -17,7 +17,7 @@ const myFont = localFont({
 })
 
 const DebugGame = () => {
-	const { fen, load, execute, getLastMove } = useGame();
+	const { fen, load, execute, getLastMove, moveInfo } = useGame();
 
 
 	function onDrop(sourceSquare: any, targetSquare: any): boolean {
@@ -44,14 +44,14 @@ const DebugGame = () => {
 		<>
 			<div className="flex justify-center items-center rounded-lg space-x-4">
 				<div className="flex space-x-5">
-					<div className="bg-[#1E1E2481] rounded-lg shadow-xl border border-[#242424]">
+					<div className="bg-[#1E1E2481] rounded-lg shadow-xl border border-[#242424] h-full">
 						<div className="pl-3 pr-3 flex flex-1 h-full items-center pt-4 flex-col gap-4 flex-wrap">
 							<div className="flex items-start pl-3">
 								<Label className={cn(myFont.className, " text-[#A2A1A860]")}>Debug Mode</Label>
 							</div>
 							<ScenarioLoader onSelection={onSelection} />
 							<Separator className="my-3 bg-white/30 rounded" />
-							<MoveDetails info={getLastMove()}></MoveDetails>
+							<MoveDetails info={moveInfo}></MoveDetails>
 							<Feed />
 						</div>
 					</div>

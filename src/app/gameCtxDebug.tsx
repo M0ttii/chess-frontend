@@ -220,6 +220,7 @@ export function GameProvider({ children }: PropsWithChildren) {
 		if(to[0] == 0 || to[0] == 7){
 			if(getPiece(move.split("-")[0]) == "P" || getPiece(move.split("-")[0]) == "p"){
 				console.log("Promotion");
+				console.log("Promotion move " + move);
 				message = {
 					id:  Math.floor(Math.random() * 1000),
 					move: move,
@@ -232,7 +233,7 @@ export function GameProvider({ children }: PropsWithChildren) {
 		.then((info: MoveInfo) => {
 			console.log("resolve", info);
 			if (info.legal) {
-				setFen(newFen);
+				setFen(info.stateFEN.toString());
 				moves.push(info);
 			}
 		})

@@ -1,6 +1,8 @@
 import { cn } from "@/lib/utils";
 import localFont from "next/font/local";
-import React from "react";
+import React, { use, useEffect } from "react";
+
+import Image from 'next/image'
 
 const myFont = localFont({
     src: '../../fonts/Supreme-Variable.ttf',
@@ -13,12 +15,18 @@ interface PlayerNameProps {
 }
 
 export const PlayerName = (props: PlayerNameProps) => {
+
+    useEffect(() => {
+    }, []);
+
     return (
         <div className="pl-2 flex pb-2">
             <div className="wtop-0 left-0">
                 <div className="flex">
 
-                    <div className="pb  w-[46px] h-[46px] top-[11px] left-[8px] object-cover bg-red-400 rounded-[20px]"></div>
+                    <div className="pb  w-[46px] h-[46px] top-[11px] left-[8px] object-cover rounded-[20px]">
+                        <Image className="rounded" src="/shelby.png" alt="sds" width={100} height={300}></Image>
+                    </div>
                     <div className={cn(myFont.className, " w-[77px] top-[11px] left-[60px] pl-2 font-bold text-white text-[18px] tracking-[0] leading-[normal] whitespace-nowrap")}>
                         {props.name}
                     </div>

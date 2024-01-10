@@ -107,7 +107,7 @@ const Game = () => {
                 <div className="flex space-x-5">
                     <div className="flex flex-col items-start">
                         <div className="flex w-full justify-between">
-                            <PlayerName name={getPlayerNameOrientation()}/>
+                            <PlayerName name={getPlayerNameOrientation(true)}/>
                             <Time initialTime={300000} isRunning={isPlayerWhite ? isBlackTimerRunning : isWhiteTimerRunning} currentTime={isPlayerWhite ? blackTimeLeft : whiteTimeLeft} ></Time>
                         </div>
                         <div className="flex space-x-5">
@@ -117,7 +117,7 @@ const Game = () => {
                             </div>
                         </div>
                         <div className="flex w-full justify-between pt-3">
-                            <PlayerName name={getPlayerNameOrientation(true)}/>
+                            <PlayerName name={getPlayerNameOrientation()}/>
                             <Time initialTime={300000} isRunning={isPlayerWhite ? isWhiteTimerRunning : isBlackTimerRunning} currentTime={isPlayerWhite ? whiteTimeLeft : blackTimeLeft}></Time>
                         </div>
                     </div>

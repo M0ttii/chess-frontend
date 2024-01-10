@@ -65,8 +65,11 @@ export const GameHistory = (props: GameHistoryProps) => {
 							const move = Array.from(moveInfo.values())[0];
 							const moveString = getMoveString(move.move);
 							return (
-								<div key={index} className="flex space-x-2 justify-center items-center w-full bg-[#0B0C0F] h-8 rounded-lg">
-									<Label className={cn(myFont.className, "text-[#A2A1A8] text-sm")}>{moveString}</Label>
+								<div key={index} className="flex space-x-2 items-center w-full bg-[#0B0C0F] h-8 rounded-lg">
+									{move.playerColor == 0 ? <div className="flex justify-start bg-white w-3 h-3 opacity-60 rounded absolute ml-2"></div> : <div className="absolute"></div>}
+									<div className="flex justify-center w-full">
+										<Label className={cn(myFont.className, "text-[#A2A1A8] text-sm")}>{moveString}</Label>
+									</div>
 								</div>
 							);
 						})}

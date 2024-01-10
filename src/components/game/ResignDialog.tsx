@@ -32,7 +32,7 @@ export const ResignDialog = ( {open, setOpen, whoResigns} : {open: any, setOpen:
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[425px] p-10">
           <DialogHeader>
-            <DialogTitle className="justify-center flex">{getWinSite()}</DialogTitle>
+            <DialogTitle className="justify-center flex">{getWinSite()} hat das Spiel gewonnen!</DialogTitle>
             <DialogDescription className="justify-center flex">
               {getLoseSite()} hat aufgegeben.
             </DialogDescription>

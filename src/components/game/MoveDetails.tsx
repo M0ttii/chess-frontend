@@ -1,11 +1,17 @@
 'user client'
 import { MoveInfo } from "@/model/MoveInfo";
+import { useEffect } from "react";
 
 interface MoveDetailsProps {
 	info: MoveInfo | null;
 }
 
 const MoveDetails = (props: MoveDetailsProps) => {
+
+	useEffect(() => {
+		console.log("MOVE DETAILS CHANGED; ", props.info);
+	}, [props.info]);
+
 	const renderLogs = () => {
 		return props.info?.log?.map((entry, i) => {
 			return <li key={i} className="mb-2 ms-4">   
