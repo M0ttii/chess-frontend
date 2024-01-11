@@ -27,7 +27,7 @@ export const PlayerName = (props: PlayerNameProps) => {
                     <div className="pb  w-[46px] h-[46px] top-[11px] left-[8px] object-cover rounded-[20px]">
                         <Image className="rounded" src="/shelby.png" alt="sds" width={100} height={300}></Image>
                     </div>
-                    <div className={cn(myFont.className, " w-[77px] top-[11px] left-[60px] pl-2 font-bold text-white text-[18px] tracking-[0] leading-[normal] whitespace-nowrap")}>
+                    <div className={cn(myFont.className, " w-[77px] top-[11px] left-[60px] pl-2 font-bold text-white opacity-90 text-[18px] tracking-[0] leading-[normal] whitespace-nowrap")}>
                         {props.name}
                     </div>
                 </div>

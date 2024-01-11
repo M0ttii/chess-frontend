@@ -15,7 +15,7 @@ export function DebugButton() {
     }
 
 	return (
-        <AbstractButton title="Free Mode" type="blue" content="Have some fun and debug the engine" onClick={nav}>
+        <AbstractButton title="Free Mode" type="blue" content="Play scenarios & debug the engine" onClick={nav}>
             <PawnIcon></PawnIcon>
         </AbstractButton>
         

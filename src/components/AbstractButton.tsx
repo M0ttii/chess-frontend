@@ -57,8 +57,8 @@ const AbstractButton = ({ content, onClick, children, title, type }: AbstractBut
 							}
 
 						</div>
-						<div className="absolute top-[-50px] translate-x-32">
-							<KingComponent className={cn("w-64 h-64")}></KingComponent>
+						<div className="absolute top-[-25px] translate-x-32">
+							<KingComponent className={cn("w-56 h-56")}></KingComponent>
 							{/* <Image className="" src="/king.svg" width={600} height={600} alt="s" /> */}
 						</div>
 					</div>

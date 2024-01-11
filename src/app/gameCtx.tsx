@@ -277,6 +277,8 @@ export function GameProvider({ children }: PropsWithChildren) {
 				console.log("[SUB::Move] Received message:", content);
 				const moveInfo: MoveInfo = content.moveInfo;
 				if (moveInfo.legal) {
+					const stateFen = moveInfo.stateFEN;
+					setFen(stateFen.toString());
 					if(moveInfo.gameState == "END_WHITE_IN_CHECKMATE" || moveInfo.gameState == "END_BLACK_IN_CHECKMATE"){
 						setCheckMate(moveInfo.gameState);
 						return;
@@ -284,8 +286,6 @@ export function GameProvider({ children }: PropsWithChildren) {
 					setWhiteTimeLeft(content.whiteTimeLeft);
 					setBlackTimeLeft(content.blackTimeLeft);
 					addMove(new Date(), moveInfo);
-					const stateFen = moveInfo.stateFEN;
-					setFen(stateFen.toString());
 					if (moveInfo.playerColor == 1) {
 						setIsWhiteTimerRunning(true);
 						setIsBlackTimerRunning(false);
