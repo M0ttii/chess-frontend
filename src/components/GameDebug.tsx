@@ -17,7 +17,7 @@ const myFont = localFont({
 })
 
 const DebugGame = () => {
-	const { fen, load, execute, getLastMove, moveInfo } = useGame();
+	const { fen, load, execute, getLastMove } = useGame();
 
 
 	function onDrop(sourceSquare: any, targetSquare: any): boolean {
